@@ -3,13 +3,6 @@ This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-/*
-rows
-columns
-box width
-box height
-boarder
-*/
 
 #pragma once
 
@@ -18,15 +11,29 @@ boarder
 #define fixedCOLOR2G(COLOR) ((COLOR >> 8) & 0xff)
 
 namespace ez {
+
+struct gui_motor_name {
+  pros::Motor motor;
+  std::string name;
+};
+
+struct gui_int_name {
+  int motor_port;
+  std::string name;
+};
+
 class gui {
  public:
-  gui(std::vector<pros::Motor> motor_list, std::vector<std::string> motor_names, int color = 0x00FFC0CB);
+  // gui(std::vector<pros::Motor> motor_list, std::vector<std::string> motor_names, int color = 0x00FFC0CB);
+  gui(std::vector<gui_motor_name> motor_name, int color = 0x00FFC0CB);
+  gui(std::vector<gui_int_name> int_name, int color = 0x00FFC0CB);
 
   void screen_task();
   void disable_gui();
   void enable_gui();
 
  private:
+  void calculate_gui();
   int ACCENT_COLOR = 0x00FFC0CB;
   int BACKGROUND_COLOR = COLOR_BLACK;
   void drawbutton(int color, int xoffset, int yoffset, int width, int height);

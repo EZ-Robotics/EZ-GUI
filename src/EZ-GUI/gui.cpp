@@ -10,15 +10,36 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using namespace ez;
 
-gui::gui(std::vector<pros::Motor> p_motors, std::vector<std::string> p_names, int color)
+gui::gui(std::vector<gui_motor_name> motor_name, int color)
     : screenTask([this] { this->screen_task(); }) {
   // Copy parameters over to globals
-  for (int i = 0; i < p_motors.size(); i++) {
-    motors.push_back(p_motors[i]);
-    names.push_back(p_names[i]);
+  for (int i = 0; i < motor_name.size(); i++) {
+    motors.push_back(motor_name[i].motor);
+    names.push_back(motor_name[i].name);
     temps.push_back(0);
   }
   ACCENT_COLOR = color;
+
+  // Figure out motor box x,y
+  calculate_gui();
+}
+
+gui::gui(std::vector<gui_int_name> int_name, int color)
+    : screenTask([this] { this->screen_task(); }) {
+  // Copy parameters over to globals
+  for (int i = 0; i < int_name.size(); i++) {
+    pros::Motor temp(i);
+    motors.push_back(temp);
+    names.push_back(int_name[i].name);
+    temps.push_back(0);
+  }
+  ACCENT_COLOR = color;
+
+  // Figure out motor box x,y
+  calculate_gui();
+}
+
+void gui::calculate_gui() {
   int amount_of_motors = motors.size();
 
   display.boarder = 15;
@@ -62,6 +83,7 @@ gui::gui(std::vector<pros::Motor> p_motors, std::vector<std::string> p_names, in
     default:
       break;
   }
+
   // Calculate box dimensions
   display.box_height = (190 - (display.boarder * (display.rows + 1))) / display.rows;
   display.box_width = (480 - (display.boarder * (display.columns + 1))) / display.columns;
@@ -70,6 +92,7 @@ gui::gui(std::vector<pros::Motor> p_motors, std::vector<std::string> p_names, in
   int p = 0;
   int x_offset = 0;
   for (int j = 1; j <= display.rows; j++) {
+    // Check if on the final row, and if the boxes need to be centered
     if (j == display.rows) {
       int boxes_left = amount_of_motors - p;
       if (boxes_left < display.columns) {
@@ -84,7 +107,6 @@ gui::gui(std::vector<pros::Motor> p_motors, std::vector<std::string> p_names, in
       temp.y1 = 240 - ((display.boarder * j) + (display.box_height * (j)));
       temp.x2 = temp.x1 + display.box_width;
       temp.y2 = temp.y1 + display.box_height;
-      printf("(%i, %i) (%i, %i)\n", temp.x1, temp.y1, temp.x2, temp.y2);
       boxes.push_back(temp);
       p++;
     }
@@ -120,11 +142,10 @@ void gui::draw_motor_squares() {
       if (error > 0) {
         percent = error / (15.0);
         percent = percent > 1.0 ? 1.0 : percent;
-        // percent = (double)master.get_analog(ANALOG_LEFT_Y) / 127.0;
       }
       opposite_percent = 1 - percent;
 
-      // printf("Motor %s is at %.2fc!\n", names[x].c_str(), temp);
+      printf("Motor %s is at %.2fc!\n", names[i].c_str(), temp);
 
       // double r = (COLOR2R(BACKGROUND_COLOR) * opposite_percent) + (COLOR2R(ACCENT_COLOR) * percent);
       // double g = (fixedCOLOR2G(BACKGROUND_COLOR) * opposite_percent) + (fixedCOLOR2G(ACCENT_COLOR) * percent);
@@ -132,8 +153,6 @@ void gui::draw_motor_squares() {
       double r = (COLOR2R(ACCENT_COLOR) * opposite_percent) + (COLOR2R(BACKGROUND_COLOR) * percent);
       double g = (fixedCOLOR2G(ACCENT_COLOR) * opposite_percent) + (fixedCOLOR2G(BACKGROUND_COLOR) * percent);
       double b = (COLOR2B(ACCENT_COLOR) * opposite_percent) + (COLOR2B(BACKGROUND_COLOR) * percent);
-
-      // printf("(%i, %i), (%i, %i)\n", x1, y1, y2, y2);
 
       pros::screen::set_pen(RGB2COLOR((int)r, (int)g, (int)b));
       pros::screen::fill_rect(boxes[i].x1, boxes[i].y1, boxes[i].x2, boxes[i].y2);

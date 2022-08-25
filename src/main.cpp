@@ -1,7 +1,5 @@
 #include "main.h"
 
-// inline std::vector<pros::Motor> all_motors = {l1, l2, r2, r1, l3, l4, r4, r3, slider_motor, intake, flywheel, flywheel2};
-// inline std::vector<std::string> motor_names = {"l1", "l2", "r2", "r1", "l3", "l4", "r4", "r3", "sl", "in", "f1", "f2"};
 pros::Motor l1(11, true);
 pros::Motor l2(12, true);
 pros::Motor l3(13, true);
@@ -15,11 +13,25 @@ pros::Motor flywheel2(10, false);
 pros::Motor intake(16, false);
 pros::Motor slider_motor(2, false);
 
-ez::gui display(
-    {l1, l2, r2, r1, l3, l4, r4, r3, slider_motor, intake, flywheel, flywheel2},
-    {"l1", "l2", "r2", "r1", "l3", "l4", "r4", "r3", "sl", "in", "f1", "f2"});
+void initialize() {
+  pros::delay(500);
 
-void initialize() {}
+  // Setup motors for displaying temperatures to brain
+  ez::gui display({
+      {l1, "l1"},
+      {l2, "l2"},
+      {r2, "r2"},
+      {r1, "r1"},
+      {l3, "l3"},
+      {l4, "l4"},
+      {r4, "r4"},
+      {r3, "r3"},
+      {slider_motor, "sl"},
+      {intake, "in"},
+      {flywheel, "f1"},
+      {flywheel2, "f2"},
+  });
+}
 void disabled() {}
 void competition_initialize() {}
 void autonomous() {}
