@@ -32,6 +32,10 @@ class gui {
   void disable_gui();
   void enable_gui();
 
+  // static lv_style_t style_txt;
+
+  void style_text();
+
  private:
   void calculate_gui();
   int ACCENT_COLOR = 0x00FFC0CB;

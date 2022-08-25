@@ -6,6 +6,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "EZ-GUI/gui.hpp"
 
+#include "display/lv_core/lv_style.h"
 #include "pros/screen.h"
 
 using namespace ez;
@@ -20,8 +21,8 @@ gui::gui(std::vector<gui_motor_name> motor_name, int color)
   }
   ACCENT_COLOR = color;
 
-  // Figure out motor box x,y
-  calculate_gui();
+  calculate_gui();  // Figure out motor box x, y
+  style_text();     // Style llvgl text
 }
 
 gui::gui(std::vector<gui_int_name> int_name, int color)
@@ -35,8 +36,8 @@ gui::gui(std::vector<gui_int_name> int_name, int color)
   }
   ACCENT_COLOR = color;
 
-  // Figure out motor box x,y
-  calculate_gui();
+  calculate_gui();  // Figure out motor box x, y
+  style_text();     // Style llvgl text
 }
 
 void gui::calculate_gui() {
@@ -113,6 +114,17 @@ void gui::calculate_gui() {
   }
 }
 
+void gui::style_text() {
+  /*Create anew style*/
+  /*
+  lv_style_copy(&style_txt, &lv_style_plain);
+  style_txt.text.font = &lv_font_dejavu_20;
+  style_txt.text.letter_space = 2;
+  style_txt.text.line_space = 1;
+  style_txt.text.color = LV_COLOR_HEX(BACKGROUND_COLOR);
+  */
+}
+
 void gui::drawbutton(int color, int xoffset, int yoffset, int width, int height) {
   pros::screen::set_pen(color);
   pros::screen::fill_circle(480 / 2 + width / 2 + xoffset, yoffset, height / 2);
@@ -157,13 +169,35 @@ void gui::draw_motor_squares() {
       pros::screen::set_pen(RGB2COLOR((int)r, (int)g, (int)b));
       pros::screen::fill_rect(boxes[i].x1, boxes[i].y1, boxes[i].x2, boxes[i].y2);
 
-      if (percent != 0) {
-        pros::screen::set_pen(ACCENT_COLOR);
-        pros::screen::print(pros::E_TEXT_MEDIUM,
-                            boxes[i].x1 - 5 + ((boxes[i].x2 - boxes[i].x1) / 2.0),
-                            boxes[i].y1 - 5 + ((boxes[i].y2 - boxes[i].y2) / 2.0),
-                            "%s", names[i].c_str());
-      }
+      // if (percent != 0) {
+      /*
+      pros::screen::set_pen(ACCENT_COLOR);
+      pros::screen::print(pros::E_TEXT_MEDIUM,
+                          boxes[i].x1 - 5 + ((boxes[i].x2 - boxes[i].x1) / 2.0),
+                          boxes[i].y1 - 5 + ((boxes[i].y2 - boxes[i].y2) / 2.0),
+                          "%s", names[i].c_str());
+      */
+
+      /*Create anew style*/
+      /*
+      static lv_style_t style_txt;
+      lv_style_copy(&style_txt, &lv_style_plain);
+      style_txt.text.font = &lv_font_dejavu_20;
+      style_txt.text.letter_space = 2;
+      style_txt.text.line_space = 1;
+      style_txt.text.color = LV_COLOR_HEX(COLOR_BLACK);*/
+      /*Create a new label*/
+      lv_obj_t* txt = lv_label_create(lv_scr_act(), NULL);
+      // lv_obj_set_style(txt, &style_txt);                /*Set the created style*/
+      // lv_label_set_long_mode(txt, LV_LABEL_LONG_BREAK); /*Break the long lines*/
+      // lv_label_set_recolor(txt, true);                  /*Enable re-coloring by commands in the text*/
+      lv_label_set_align(txt, LV_LABEL_ALIGN_CENTER); /*Center aligned lines*/
+      lv_obj_set_x(txt, 100);
+      lv_obj_set_y(txt, 100);
+      // lv_obj_set_width(txt, display.box_width);        /*Set a width*/
+      lv_obj_align(txt, NULL, LV_ALIGN_CENTER, 0, 20); /*Align to center*/
+      lv_label_set_text(txt, "l1");
+      // }
     }
 
     temps[i] = temp;
