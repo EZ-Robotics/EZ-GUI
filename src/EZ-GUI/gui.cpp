@@ -6,6 +6,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "EZ-GUI/gui.hpp"
 
+#include "display/lv_core/lv_obj.h"
 #include "display/lv_core/lv_style.h"
 #include "pros/screen.h"
 
@@ -108,10 +109,30 @@ void gui::calculate_gui() {
       temp.y1 = 240 - ((display.boarder * j) + (display.box_height * (j)));
       temp.x2 = temp.x1 + display.box_width;
       temp.y2 = temp.y1 + display.box_height;
-      boxes.push_back(temp);
+      box_pos.push_back(temp);
+
       p++;
     }
   }
+}
+
+void gui::generate_motor_boxes() {
+  // for (int i = 0; i < box_pos.size(); i++) {
+  /*
+  static lv_style_t style_bkgnd;
+  lv_style_copy(&style_bkgnd, &lv_style_pretty_color);
+  style_bkgnd.body.main_color = LV_COLOR_ORANGE;
+  style_bkgnd.body.grad_color = style_bkgnd.body.main_color;
+
+  lv_obj_t* obj1;
+  obj1 = lv_obj_create(lv_scr_act(), NULL);
+  lv_obj_set_size(obj1, display.box_width, display.box_height);
+  lv_obj_set_style(obj1, &style_bkgnd);
+  lv_obj_align(obj1, NULL, LV_ALIGN_IN_TOP_LEFT, box_pos[i].x1, box_pos[i].y1);
+
+  motor_boxes.push_back(obj1);
+  */
+  // }
 }
 
 void gui::style_text() {
@@ -145,7 +166,11 @@ void gui::draw_selector_buttons() {
 }
 
 void gui::draw_motor_squares() {
-  for (int i = 0; i < boxes.size(); i++) {
+  static lv_style_t style_bkgnd;
+  lv_style_copy(&style_bkgnd, &lv_style_pretty_color);
+  style_bkgnd.body.main_color = LV_COLOR_ORANGE;
+  style_bkgnd.body.grad_color = style_bkgnd.body.main_color;
+  for (int i = 0; i < box_pos.size(); i++) {
     double temp = motors[i].get_temperature();
     if (temps[i] != temp) {
       double error = temp - 40.0;
@@ -159,15 +184,36 @@ void gui::draw_motor_squares() {
 
       printf("Motor %s is at %.2fc!\n", names[i].c_str(), temp);
 
+      lv_obj_t* obj1;
+      obj1 = lv_obj_create(lv_scr_act(), NULL);
+      lv_obj_set_size(obj1, display.box_width, display.box_height);
+      lv_obj_set_style(obj1, &style_bkgnd);
+      lv_obj_align(obj1, NULL, LV_ALIGN_IN_TOP_LEFT, box_pos[i].x1, box_pos[i].y1);
+
+      // motor_boxes.push_back(*obj1);
+
       // double r = (COLOR2R(BACKGROUND_COLOR) * opposite_percent) + (COLOR2R(ACCENT_COLOR) * percent);
       // double g = (fixedCOLOR2G(BACKGROUND_COLOR) * opposite_percent) + (fixedCOLOR2G(ACCENT_COLOR) * percent);
       // double b = (COLOR2B(BACKGROUND_COLOR) * opposite_percent) + (COLOR2B(ACCENT_COLOR) * percent);
-      double r = (COLOR2R(ACCENT_COLOR) * opposite_percent) + (COLOR2R(BACKGROUND_COLOR) * percent);
-      double g = (fixedCOLOR2G(ACCENT_COLOR) * opposite_percent) + (fixedCOLOR2G(BACKGROUND_COLOR) * percent);
-      double b = (COLOR2B(ACCENT_COLOR) * opposite_percent) + (COLOR2B(BACKGROUND_COLOR) * percent);
+      // double r = (COLOR2R(ACCENT_COLOR) * opposite_percent) + (COLOR2R(BACKGROUND_COLOR) * percent);
+      // double g = (fixedCOLOR2G(ACCENT_COLOR) * opposite_percent) + (fixedCOLOR2G(BACKGROUND_COLOR) * percent);
+      // double b = (COLOR2B(ACCENT_COLOR) * opposite_percent) + (COLOR2B(BACKGROUND_COLOR) * percent);
 
-      pros::screen::set_pen(RGB2COLOR((int)r, (int)g, (int)b));
-      pros::screen::fill_rect(boxes[i].x1, boxes[i].y1, boxes[i].x2, boxes[i].y2);
+      /*
+          static lv_style_t style_bkgnd;
+          lv_style_copy(&style_bkgnd, &lv_style_pretty_color);
+          style_bkgnd.body.main_color = LV_COLOR_HEX(0xFFC0CB);
+          style_bkgnd.body.grad_color = style_bkgnd.body.main_color;
+
+          lv_obj_t* obj1;
+          obj1 = lv_obj_create(lv_scr_act(), NULL);
+          lv_obj_set_size(obj1, display.box_width, display.box_height);
+          lv_obj_set_style(&motor_boxes[i], &style_bkgnd);
+          lv_obj_align(obj1, NULL, LV_ALIGN_IN_TOP_LEFT, box_pos[i].x1, box_pos[i].x2);
+          */
+
+      // pros::screen::set_pen(RGB2COLOR((int)r, (int)g, (int)b));
+      // pros::screen::fill_rect(boxes[i].x1, boxes[i].y1, boxes[i].x2, boxes[i].y2);
 
       // if (percent != 0) {
       /*
@@ -178,25 +224,6 @@ void gui::draw_motor_squares() {
                           "%s", names[i].c_str());
       */
 
-      /*Create anew style*/
-      /*
-      static lv_style_t style_txt;
-      lv_style_copy(&style_txt, &lv_style_plain);
-      style_txt.text.font = &lv_font_dejavu_20;
-      style_txt.text.letter_space = 2;
-      style_txt.text.line_space = 1;
-      style_txt.text.color = LV_COLOR_HEX(COLOR_BLACK);*/
-      /*Create a new label*/
-      lv_obj_t* txt = lv_label_create(lv_scr_act(), NULL);
-      // lv_obj_set_style(txt, &style_txt);                /*Set the created style*/
-      // lv_label_set_long_mode(txt, LV_LABEL_LONG_BREAK); /*Break the long lines*/
-      // lv_label_set_recolor(txt, true);                  /*Enable re-coloring by commands in the text*/
-      lv_label_set_align(txt, LV_LABEL_ALIGN_CENTER); /*Center aligned lines*/
-      lv_obj_set_x(txt, 100);
-      lv_obj_set_y(txt, 100);
-      // lv_obj_set_width(txt, display.box_width);        /*Set a width*/
-      lv_obj_align(txt, NULL, LV_ALIGN_CENTER, 0, 20); /*Align to center*/
-      lv_label_set_text(txt, "l1");
       // }
     }
 
@@ -208,15 +235,27 @@ void gui::screen_task() {
   // 480 x 240
   // Black background
   while (pros::millis() < 250) pros::delay(10);
-  pros::screen::set_pen(BACKGROUND_COLOR);
-  pros::screen::fill_rect(0, 0, 480, 240);
+  /*
+  static lv_style_t style_bkgnd;
+  lv_style_copy(&style_bkgnd, &lv_style_plain_color);
+  style_bkgnd.body.main_color = LV_COLOR_BLACK;
+  style_bkgnd.body.grad_color = style_bkgnd.body.main_color;
+
+  lv_obj_t* obj1;
+  obj1 = lv_obj_create(lv_scr_act(), NULL);
+  lv_obj_set_size(obj1, 480, 240);
+  lv_obj_set_style(obj1, &style_bkgnd);
+  lv_obj_align(obj1, NULL, LV_ALIGN_CENTER, 0, 0);
+  */
   pros::delay(100);
+
+  generate_motor_boxes();
 
   // pros::Controller master(CONTROLLER_MASTER);
 
   while (true) {
     // Display stuff
-    draw_selector_buttons();
+    // draw_selector_buttons();
     draw_motor_squares();
 
     // ez::as::auton_selector.print_selected_auton();

@@ -43,6 +43,7 @@ class gui {
   void drawbutton(int color, int xoffset, int yoffset, int width, int height);
   void draw_selector_buttons();
   void draw_motor_squares();
+  void generate_motor_boxes();
   pros::Task screenTask;
 
   struct box {
@@ -63,6 +64,7 @@ class gui {
   std::vector<pros::Motor> motors;
   std::vector<std::string> names;
   std::vector<double> temps;
-  std::vector<box> boxes;
+  std::vector<box> box_pos;
+  std::vector<lv_obj_t> motor_boxes;
 };
 }  // namespace ez
