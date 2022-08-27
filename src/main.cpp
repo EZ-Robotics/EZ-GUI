@@ -14,14 +14,14 @@ pros::Motor intake(16, false);
 pros::Motor slider_motor(2, false);
 
 ez::GUI motor_display(
-    {{l1, "left1"},
-     {l2, "left2"},
-     {r2, "right2"},
-     {r1, "right1"},
-     {l3, "left3"},
-     {l4, "left4"},
-     {r4, "right4"},
-     {r3, "right3"},
+    {{l1, "left 1"},
+     {l2, "left 2"},
+     {r2, "right 2"},
+     {r1, "right 1"},
+     {l3, "left 3"},
+     {l4, "left 4"},
+     {r4, "right 4"},
+     {r3, "right 3"},
      {slider_motor, "slider"},
      {intake, "intake"},
      {flywheel, "fly 1"},

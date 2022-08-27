@@ -17,35 +17,43 @@ void GUI::calculate_motor_boxes() {
   // Set constants based on amount of motors
   switch (amount_of_motors) {
     case 1:
+      max_motor_name_length = 33;
       display.rows = 1;
       display.columns = 1;
       break;
     case 2:
+      max_motor_name_length = 15;
       display.rows = 1;
       display.columns = 2;
       break;
     case 3:
+      max_motor_name_length = 10;
       display.rows = 1;
       display.columns = 3;
       break;
     case 4:
+      max_motor_name_length = 7;
       display.rows = 1;
       display.columns = 4;
       break;
     case 5 ... 8:
+      max_motor_name_length = 7;
       display.rows = 2;
       display.columns = 4;
       break;
     case 9 ... 12:
+      max_motor_name_length = 7;
       display.rows = 3;
       display.columns = 4;
       break;
     case 13 ... 16:
+      max_motor_name_length = 7;
       display.boarder = 10;
       display.rows = 4;
       display.columns = 4;
       break;
     case 17 ... 20:
+      max_motor_name_length = 7;
       display.boarder = 10;
       display.rows = 5;
       display.columns = 4;
@@ -94,6 +102,12 @@ void GUI::initialize_motor_boxes() {
     lv_obj_set_style(temp_box, &box_style);
     lv_obj_align(temp_box, NULL, LV_ALIGN_IN_TOP_LEFT, box_pos[i].x1, box_pos[i].y1);
 
+    // Check if text is over allowed length
+    if (names[i].length() > max_motor_name_length) {
+      printf("Motor %s is too long!  Max of %i characters!\n", names[i].c_str(), max_motor_name_length);
+      names[i] = "LENGTH";
+    }
+
     // Create text
     lv_obj_t* temp_txt = lv_label_create(lv_scr_act(), NULL);
     lv_obj_set_style(temp_txt, &box_txt_style);
@@ -130,12 +144,12 @@ void GUI::update_motor_boxes() {
 
       // Create new color in-between background_color and accent_color
       lv_color_t new_color;
-      // new_color.red = (ACCENT_COLOR.red * opposite_percent) + (BACKGROUND_COLOR.red * percent);
-      // new_color.green = (ACCENT_COLOR.green * opposite_percent) + (BACKGROUND_COLOR.green * percent);
-      // new_color.blue = (ACCENT_COLOR.blue * opposite_percent) + (BACKGROUND_COLOR.blue * percent);
-      new_color.red = (BACKGROUND_COLOR.red * opposite_percent) + (ACCENT_COLOR.red * percent);
-      new_color.green = (BACKGROUND_COLOR.green * opposite_percent) + (ACCENT_COLOR.green * percent);
-      new_color.blue = (BACKGROUND_COLOR.blue * opposite_percent) + (ACCENT_COLOR.blue * percent);
+      new_color.red = (ACCENT_COLOR.red * opposite_percent) + (BACKGROUND_COLOR.red * percent);
+      new_color.green = (ACCENT_COLOR.green * opposite_percent) + (BACKGROUND_COLOR.green * percent);
+      new_color.blue = (ACCENT_COLOR.blue * opposite_percent) + (BACKGROUND_COLOR.blue * percent);
+      // new_color.red = (BACKGROUND_COLOR.red * opposite_percent) + (ACCENT_COLOR.red * percent);
+      // new_color.green = (BACKGROUND_COLOR.green * opposite_percent) + (ACCENT_COLOR.green * percent);
+      // new_color.blue = (BACKGROUND_COLOR.blue * opposite_percent) + (ACCENT_COLOR.blue * percent);
 
       // Set new color to box and refresh the object
       box_style.body.main_color = new_color;

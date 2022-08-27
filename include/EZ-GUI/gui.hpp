@@ -73,6 +73,7 @@ class GUI {
     int boarder = 0;
   };
   motor_display_constants display;
+  int max_motor_name_length = 0;
 
   std::vector<pros::Motor> motors;
   std::vector<std::string> names;

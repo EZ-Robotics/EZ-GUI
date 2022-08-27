@@ -10,7 +10,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #include "display/lv_core/lv_style.h"
 #include "display/lv_fonts/lv_font_builtin.h"
 #include "display/lv_objx/lv_label.h"
-#include "pros/screen.h"
 
 using namespace ez;
 
@@ -20,10 +19,7 @@ GUI::GUI(std::vector<gui_motor_name> motor_name, lv_color_t accent_color)
   // Copy parameters over to globals
   for (int i = 0; i < motor_name.size(); i++) {
     motors.push_back(motor_name[i].motor);
-    if (motor_name[i].name.length() > 6)
-      names.push_back("error");
-    else
-      names.push_back(motor_name[i].name);
+    names.push_back(motor_name[i].name);
     temps.push_back(0);
   }
 
@@ -38,10 +34,7 @@ GUI::GUI(std::vector<gui_int_name> int_name, lv_color_t accent_color)
   for (int i = 0; i < int_name.size(); i++) {
     pros::Motor temp(i);
     motors.push_back(temp);
-    if (int_name[i].name.length() > 6)
-      names.push_back("error");
-    else
-      names.push_back(int_name[i].name);
+    names.push_back(int_name[i].name);
     temps.push_back(0);
   }
 
