@@ -42,7 +42,7 @@ GUI::GUI(std::vector<gui_int_name> int_name, lv_color_t accent_color)
   set_styles(accent_color, LV_COLOR_BLACK);  // Style lvgl styles
 }
 
-// Set the background color
+// Set the background color 
 void GUI::set_background_color() {
   lv_style_copy(&bckgnd_style, &lv_style_plain_color);
   bckgnd_style.body.main_color = BACKGROUND_COLOR;
