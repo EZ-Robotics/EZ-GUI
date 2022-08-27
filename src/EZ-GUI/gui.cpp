@@ -42,17 +42,29 @@ GUI::GUI(std::vector<gui_int_name> int_name, lv_color_t accent_color)
   set_styles(accent_color, LV_COLOR_BLACK);  // Style lvgl styles
 }
 
-// Set the background color 
+// Set the background color
 void GUI::set_background_color() {
+  if (has_initialized && lv_obj_get_hidden(background)) return;
+
   lv_style_copy(&bckgnd_style, &lv_style_plain_color);
-  bckgnd_style.body.main_color = BACKGROUND_COLOR;
+  bckgnd_style.body.main_color = LV_COLOR_RED;
   bckgnd_style.body.grad_color = bckgnd_style.body.main_color;
 
-  lv_obj_t* background;
-  background = lv_obj_create(lv_scr_act(), NULL);
-  lv_obj_set_size(background, 480, 240);
-  lv_obj_set_style(background, &bckgnd_style);
-  lv_obj_align(background, NULL, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_t* temp_background = lv_obj_create(lv_scr_act(), NULL);
+  lv_obj_set_size(temp_background, 480, 240);
+  lv_obj_set_style(temp_background, &bckgnd_style);
+  lv_obj_align(temp_background, NULL, LV_ALIGN_CENTER, 0, 0);
+  background = temp_background;
+}
+
+// Hide background
+void GUI::hide_background(bool hidden) {
+  if (!has_initialized) {
+    printf("Background is uninitialized!  Cannot modify hide state!\n");
+    return;
+  }
+
+  lv_obj_set_hidden(background, hidden);
 }
 
 // Set lgvl styles
@@ -85,57 +97,77 @@ void GUI::set_styles(lv_color_t accent_color, lv_color_t background_color) {
 }
 
 void GUI::screen_task() {
-  set_background_color();
-  initialize_motor_boxes();
-  initialize_selector_buttons();
-  initialize_selector_text();
   while (true) {
-    // Update motor boxes with motor temperature
-    update_motor_boxes();
+    while (gui_enabled) {
+      // Update motor boxes with motor temperature
+      update_motor_boxes();
 
-    // ez::as::auton_selector.print_selected_auton();
-    // print_to_screen("Page " + std::to_string(current_auton_page + 1) + "\n" + Autons[current_auton_page].Name);
+      // ez::as::auton_selector.print_selected_auton();
+      // print_to_screen("Page " + std::to_string(current_auton_page + 1) + "\n" + Autons[current_auton_page].Name);
 
-    /*
-    if (!(pros::competition::is_autonomous() && pros::competition::is_disabled())) {
-      if (master.get_digital_new_press(DIGITAL_LEFT))
-        ez::as::page_down();
-      else if (master.get_digital_new_press(DIGITAL_RIGHT))
-        ez::as::page_up();
-    }
-    */
-
-    /*
-    pros::screen_touch_status_s_t hi = pros::c::screen_touch_status();
-    if (status.y < 40) {
-      if (status.x < 50) {
-        // left
-      } else if (status.x > 480 - 50) {
-        // right
-      } else {
-        // somewhere in the middle
+      /*
+      if (!(pros::competition::is_autonomous() && pros::competition::is_disabled())) {
+        if (master.get_digital_new_press(DIGITAL_LEFT))
+          ez::as::page_down();
+        else if (master.get_digital_new_press(DIGITAL_RIGHT))
+          ez::as::page_up();
       }
-    }
-    printf("(%i, %i)\n", status.x, status.y);
-    */
+      */
 
-    // left
-    // 0,0,50,40
-    // right
-    // 480-50,0,480,40
+      /*
+      pros::screen_touch_status_s_t hi = pros::c::screen_touch_status();
+      if (status.y < 40) {
+        if (status.x < 50) {
+          // left
+        } else if (status.x > 480 - 50) {
+          // right
+        } else {
+          // somewhere in the middle
+        }
+      }
+      printf("(%i, %i)\n", status.x, status.y);
+      */
+
+      // left
+      // 0,0,50,40
+      // right
+      // 480-50,0,480,40
+    }
 
     pros::delay(50);
   }
 }
 
-void GUI::enable_gui() {
+void GUI::enable() {
+  printf("Gui enabled!\n");
   for (int i = 0; i < temps.size(); i++) {
     temps[i] = 0;
   }
+
+  if (!has_initialized) {
+    set_background_color();
+    // initialize_motor_boxes();
+    // initialize_selector_buttons();
+    // initialize_selector_text();
+  }
+
+  else {
+    hide_background(false);
+    // hide_motor_boxes(false);
+    // hide_selector_buttons(false);
+    // hide_selector_text(false);
+  }
+
+  gui_enabled = true;
+  has_initialized = true;
 }
 
-void GUI::disable_gui() {
-  for (int i = 0; i < temps.size(); i++) {
-    temps[i] = 0;
-  }
+void GUI::disable() {
+  printf("Gui disabled!\n");
+  hide_background(true);
+  // hide_motor_boxes(true);
+  // hide_selector_buttons(true);
+  // hide_selector_text(true);
+
+  gui_enabled = false;
 }

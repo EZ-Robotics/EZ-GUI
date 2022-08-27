@@ -1,5 +1,7 @@
 #include "main.h"
 
+#include "display/lv_core/lv_obj.h"
+
 pros::Motor l1(11, true);
 pros::Motor l2(12, true);
 pros::Motor l3(13, true);
@@ -28,7 +30,17 @@ ez::GUI motor_display(
      {flywheel2, "fly 2"}});
 
 void initialize() {
-  pros::delay(500);
+  pros::delay(300);
+
+  motor_display.enable();
+
+  pros::delay(1000);
+
+  motor_display.disable();
+
+  pros::delay(1000);
+
+  motor_display.enable();
 }
 void disabled() {}
 void competition_initialize() {}

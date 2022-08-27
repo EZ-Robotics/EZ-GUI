@@ -94,6 +94,9 @@ void GUI::calculate_motor_boxes() {
 
 // Initial display + place lgvl objects into vectors for updating later
 void GUI::initialize_motor_boxes() {
+  if (has_initialized) return;
+  is_motor_boxes_hidden = false;
+
   for (int i = 0; i < box_pos.size(); i++) {
     // Create motor box
     lv_obj_t* temp_box;
@@ -119,13 +122,29 @@ void GUI::initialize_motor_boxes() {
     lv_obj_align(temp_txt, NULL, LV_ALIGN_CENTER, x - 240, y - 120);
 
     // Add box and text objects to vectors
-    motor_boxes.push_back(*temp_box);
-    motor_names.push_back(*temp_txt);
+    motor_boxes.push_back(temp_box);
+    motor_names.push_back(temp_txt);
+  }
+}
+
+// Hide motor boxess
+void GUI::hide_motor_boxes(bool hidden) {
+  if (!has_initialized) {
+    printf("Motor names and boxes are uninitialized!  Cannot modify hide state!\n");
+    return;
+  }
+
+  is_motor_boxes_hidden = hidden;
+  for (int i = 0; i < box_pos.size(); i++) {
+    lv_obj_set_hidden(motor_boxes[i], hidden);
+    lv_obj_set_hidden(motor_names[i], hidden);
   }
 }
 
 // This is constantly run to update the colors of the boxes as motors heat up
 void GUI::update_motor_boxes() {
+  if (is_motor_boxes_hidden) return;
+
   for (int i = 0; i < box_pos.size(); i++) {
     // Check if the temperature has updated
     double temp = motors[i].get_temperature();
@@ -140,21 +159,21 @@ void GUI::update_motor_boxes() {
       }
       opposite_percent = 1 - percent;
 
-      printf("Motor %s is at %.2fc!\n", names[i].c_str(), temp);
+      // printf("Motor %s is at %.2fc!\n", names[i].c_str(), temp);
 
       // Create new color in-between background_color and accent_color
-      lv_color_t new_color;
-      new_color.red = (ACCENT_COLOR.red * opposite_percent) + (BACKGROUND_COLOR.red * percent);
-      new_color.green = (ACCENT_COLOR.green * opposite_percent) + (BACKGROUND_COLOR.green * percent);
-      new_color.blue = (ACCENT_COLOR.blue * opposite_percent) + (BACKGROUND_COLOR.blue * percent);
-      // new_color.red = (BACKGROUND_COLOR.red * opposite_percent) + (ACCENT_COLOR.red * percent);
-      // new_color.green = (BACKGROUND_COLOR.green * opposite_percent) + (ACCENT_COLOR.green * percent);
-      // new_color.blue = (BACKGROUND_COLOR.blue * opposite_percent) + (ACCENT_COLOR.blue * percent);
+      static lv_color_t new_color;
+      // new_color.red = (ACCENT_COLOR.red * opposite_percent) + (BACKGROUND_COLOR.red * percent);
+      // new_color.green = (ACCENT_COLOR.green * opposite_percent) + (BACKGROUND_COLOR.green * percent);
+      // new_color.blue = (ACCENT_COLOR.blue * opposite_percent) + (BACKGROUND_COLOR.blue * percent);
+      new_color.red = (BACKGROUND_COLOR.red * opposite_percent) + (ACCENT_COLOR.red * percent);
+      new_color.green = (BACKGROUND_COLOR.green * opposite_percent) + (ACCENT_COLOR.green * percent);
+      new_color.blue = (BACKGROUND_COLOR.blue * opposite_percent) + (ACCENT_COLOR.blue * percent);
 
       // Set new color to box and refresh the object
       box_style.body.main_color = new_color;
       box_style.body.grad_color = box_style.body.main_color;
-      lv_obj_refresh_style(&motor_boxes[i]);
+      lv_obj_refresh_style(motor_boxes[i]);
     }
 
     temps[i] = temp;

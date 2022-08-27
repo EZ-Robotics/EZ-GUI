@@ -31,8 +31,8 @@ class GUI {
   GUI(std::vector<gui_int_name> int_name, lv_color_t accent_color = LV_COLOR_HEX(0xFFC0CB));
 
   void screen_task();
-  void disable_gui();
-  void enable_gui();
+  void disable();
+  void enable();
 
   // static lv_style_t style_txt;
   lv_style_t box_style;
@@ -44,7 +44,8 @@ class GUI {
   bool wiggle_text = false;
 
  private:
-  lv_obj_t* selector_text;
+  bool gui_enabled = false;
+
   void set_selector_text(std::string text);
   void set_background_color();
   void initialize_motor_boxes();
@@ -58,6 +59,13 @@ class GUI {
   lv_color_t BACKGROUND_COLOR = LV_COLOR_BLACK;
   void update_motor_boxes();
   pros::Task screenTask;
+
+  void hide_motor_boxes(bool hidden);
+  void hide_background(bool hidden);
+  void hide_selector_text(bool hidden);
+  void hide_selector_buttons(bool hidden);
+  bool is_motor_boxes_hidden = true;
+  bool has_initialized = false;
 
   struct box {
     int x1 = 0;
@@ -79,7 +87,12 @@ class GUI {
   std::vector<std::string> names;
   std::vector<double> temps;
   std::vector<box> box_pos;
-  std::vector<lv_obj_t> motor_boxes;
-  std::vector<lv_obj_t> motor_names;
+
+  std::vector<lv_obj_t*> motor_boxes;
+  std::vector<lv_obj_t*> motor_names;
+  lv_obj_t* selector_text;
+  lv_obj_t* selector_left;
+  lv_obj_t* selector_right;
+  lv_obj_t* background;
 };
 }  // namespace ez

@@ -10,34 +10,51 @@ using namespace ez;
 
 // Initialize selector buttons
 void GUI::initialize_selector_buttons() {
+  if (has_initialized) return;
   int width = 120;
   int height = 40;
   int y = 15;
 
-  lv_obj_t* left_button;
-  left_button = lv_obj_create(lv_scr_act(), NULL);
-  lv_obj_set_size(left_button, 120, 40);
-  lv_obj_set_style(left_button, &slctr_bttn_style);
-  lv_obj_align(left_button, NULL, LV_ALIGN_IN_TOP_LEFT, 0 - (width / 2), y);
+  lv_obj_t* temp_left;
+  temp_left = lv_obj_create(lv_scr_act(), NULL);
+  lv_obj_set_size(temp_left, 120, 40);
+  lv_obj_set_style(temp_left, &slctr_bttn_style);
+  lv_obj_align(temp_left, NULL, LV_ALIGN_IN_TOP_LEFT, 0 - (width / 2), y);
 
-  lv_obj_t* right_button;
-  right_button = lv_obj_create(lv_scr_act(), NULL);
-  lv_obj_set_size(right_button, 120, 40);
-  lv_obj_set_style(right_button, &slctr_bttn_style);
-  lv_obj_align(right_button, NULL, LV_ALIGN_IN_TOP_LEFT, 240 + (width + (width / 2)), y);
+  lv_obj_t* temp_right;
+  temp_right = lv_obj_create(lv_scr_act(), NULL);
+  lv_obj_set_size(temp_right, 120, 40);
+  lv_obj_set_style(temp_right, &slctr_bttn_style);
+  lv_obj_align(temp_right, NULL, LV_ALIGN_IN_TOP_LEFT, 240 + (width + (width / 2)), y);
+
+  selector_left = temp_left;
+  selector_right = temp_right;
+}
+
+// Hide selector buttons
+void GUI::hide_selector_buttons(bool hidden) {
+  if (!has_initialized) {
+    printf("Selector buttons is uninitialized!  Cannot modify hide state!\n");
+    return;
+  }
+
+  lv_obj_set_hidden(selector_left, true);
+  lv_obj_set_hidden(selector_right, true);
 }
 
 // Initialize selector text
 void GUI::initialize_selector_text() {
-  lv_obj_t* temp_text = lv_label_create(lv_scr_act(), NULL);
-  lv_obj_set_style(temp_text, &slctr_txt_style);
-  lv_label_set_align(temp_text, LV_LABEL_ALIGN_CENTER);
-  lv_label_set_long_mode(temp_text, LV_LABEL_LONG_ROLL);
-  lv_obj_set_width(temp_text, 350);
-  lv_label_set_anim_speed(temp_text, 125);
-  lv_label_set_text(temp_text, "");
-  lv_obj_align(temp_text, NULL, LV_ALIGN_CENTER, 0, -85);
-  selector_text = temp_text;
+  if (has_initialized) return;
+
+  lv_obj_t* temp_selector = lv_label_create(lv_scr_act(), NULL);
+  lv_obj_set_style(temp_selector, &slctr_txt_style);
+  lv_label_set_align(temp_selector, LV_LABEL_ALIGN_CENTER);
+  lv_label_set_long_mode(temp_selector, LV_LABEL_LONG_ROLL);
+  lv_obj_set_width(temp_selector, 350);
+  lv_label_set_anim_speed(temp_selector, 125);
+  lv_label_set_text(temp_selector, "");
+  lv_obj_align(temp_selector, NULL, LV_ALIGN_CENTER, 0, -85);
+  selector_text = temp_selector;
 }
 
 // Update selector text with parameter
@@ -57,7 +74,16 @@ void GUI::set_wiggling_selector_text(std::string text) {
 
   std::string spaces;
   for (int i = 0; i < spaces_to_add / 2.0; i++) {
-    spaces += "-";
+    spaces += " ";
   }
   set_selector_text(spaces + text + spaces);
+}
+
+void GUI::hide_selector_text(bool hidden) {
+  if (!has_initialized) {
+    printf("Selector text is uninitialized!  Cannot modify hide state!\n");
+    return;
+  }
+
+  lv_obj_set_hidden(selector_text, hidden);
 }
