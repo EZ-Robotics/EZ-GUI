@@ -37,7 +37,7 @@ class GUI {
   // static lv_style_t style_txt;
   lv_style_t box_style;
   lv_style_t slctr_bttn_style;
-  lv_style_t bckgnd_style;
+  static lv_style_t bckgnd_style;
   lv_style_t box_txt_style;
   lv_style_t slctr_txt_style;
 
@@ -47,13 +47,13 @@ class GUI {
   bool gui_enabled = false;
 
   void set_selector_text(std::string text);
-  void set_background_color();
+  void initialize_background();
   void initialize_motor_boxes();
   void initialize_selector_buttons();
   void initialize_selector_text();
   void set_wiggling_selector_text(std::string text);
 
-  void set_styles(lv_color_t accent_color, lv_color_t background_color);
+  void initialize_styles();
   void calculate_motor_boxes();
   lv_color_t ACCENT_COLOR = LV_COLOR_HEX(0xFFC0CB);
   lv_color_t BACKGROUND_COLOR = LV_COLOR_BLACK;

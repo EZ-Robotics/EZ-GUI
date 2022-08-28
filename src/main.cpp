@@ -31,15 +31,37 @@ ez::GUI motor_display(
 
 void initialize() {
   pros::delay(300);
+  /*
+
+  // Create new style
+  lv_style_t background_style;
+  lv_style_copy(&background_style, &lv_style_plain_color);
+  background_style.body.main_color = LV_COLOR_RED;
+  background_style.body.grad_color = background_style.body.main_color;
+
+  // Create background
+  lv_obj_t* temp_background = lv_obj_create(lv_scr_act(), NULL);
+  lv_obj_set_size(temp_background, 480, 240);
+  lv_obj_set_style(temp_background, &background_style);
+  lv_obj_align(temp_background, NULL, LV_ALIGN_CENTER, 0, 0);
+
+  pros::delay(1000);
+
+  // Hide background
+  lv_obj_set_hidden(temp_background, true);
+
+  pros::delay(1000);
+
+  // Unhide background
+  lv_obj_set_hidden(temp_background, false);
+
+  pros::delay(1000);
+  */
 
   motor_display.enable();
-
   pros::delay(1000);
-
   motor_display.disable();
-
   pros::delay(1000);
-
   motor_display.enable();
 }
 void disabled() {}
