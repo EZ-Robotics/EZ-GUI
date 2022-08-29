@@ -11,7 +11,7 @@ using namespace ez;
 // Initialize sd card for auto selector
 void GUI::initialize_selector_sd() {
   // If no SD card, return
-  if (!IS_SD_CARD) return;
+  if (!IS_SD_CARD || !is_auton_enabled) return;
 
   FILE* as_usd_file_read;
   // If file exists...
@@ -36,7 +36,7 @@ void GUI::initialize_selector_sd() {
 // Update the current page on sd card
 void GUI::selector_update_sd() {
   // If no SD card, return
-  if (!IS_SD_CARD) return;
+  if (!IS_SD_CARD || !is_auton_enabled) return;
 
   FILE* usd_file_write = fopen("/usd/auto.txt", "w");
   std::string cp_str = std::to_string(current_auton_page);
@@ -47,6 +47,8 @@ void GUI::selector_update_sd() {
 
 // Increase page on auto selector
 void GUI::selector_page_up() {
+  if (!is_auton_enabled) return;
+
   if (current_auton_page == amount_of_autos - 1)
     current_auton_page = 0;
   else
@@ -57,6 +59,8 @@ void GUI::selector_page_up() {
 
 // Decrease page on auto selector
 void GUI::selector_page_down() {
+  if (!is_auton_enabled) return;
+
   if (current_auton_page == 0)
     current_auton_page = amount_of_autos - 1;
   else
@@ -67,20 +71,16 @@ void GUI::selector_page_down() {
 
 // Print selected auton
 void GUI::print_selected_auton() {
-  if (amount_of_autos == 0) return;
+  if (amount_of_autos == 0 || !is_auton_enabled) return;
 
   if (wiggle_text)
     set_wiggling_selector_text(autons_and_names[current_auton_page].name);
   else
     set_selector_text(autons_and_names[current_auton_page].name);
-
-  // Give cpu time to update display (this function doesnt work without this)
-  for (int i = 0; i <= 40; i += 10)
-    pros::delay(10);
 }
 
 // Call selected auton
 void GUI::call_selected_auton() {
-  if (amount_of_autos == 0) return;
+  if (amount_of_autos == 0 || !is_auton_enabled) return;
   autons_and_names[current_auton_page].auton_call();
 }

@@ -24,6 +24,7 @@ GUI::GUI(std::vector<gui_motor_name> motor_name, lv_color_t accent_color)
   }
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
+  is_auton_enabled = false;
 }
 
 // Constructor for using motors with autons
@@ -38,6 +39,7 @@ GUI::GUI(std::vector<gui_motor_name> motor_name, std::vector<auton_and_name> aut
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
 
+  is_auton_enabled = true;
   amount_of_autos = autons.size();
   current_auton_page = 0;
   autons_and_names = autons;
@@ -56,6 +58,7 @@ GUI::GUI(std::vector<gui_int_name> int_name, lv_color_t accent_color)
   }
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
+  is_auton_enabled = false;
 }
 
 // Constructor for using ints with autos
@@ -71,10 +74,16 @@ GUI::GUI(std::vector<gui_int_name> int_name, std::vector<auton_and_name> autons,
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
 
+  is_auton_enabled = true;
   amount_of_autos = autons.size();
   current_auton_page = 0;
   autons_and_names = autons;
   initialize_selector_sd();
+}
+
+void GUI::delay() {
+  for (int i = 0; i <= 40; i += 10)
+    pros::delay(10);
 }
 
 void GUI::initialize_background() {
@@ -128,15 +137,22 @@ void GUI::initialize_styles() {
 }
 
 void GUI::screen_task() {
+  bool initial_update_screen = false;
   pros::Controller master(pros::E_CONTROLLER_MASTER);
   while (true) {
     while (gui_enabled) {
       // Update motor boxes with motor temperature
       update_motor_boxes();
 
+      if (is_auton_enabled) {
+        if (!initial_update_screen) {
+          print_selected_auton();
+          initial_update_screen = !initial_update_screen;
+        }
+      }
+
       if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
         selector_page_down();
-
       } else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
         selector_page_up();
       }
@@ -160,7 +176,7 @@ void GUI::enable() {
     initialize_selector_buttons();
     initialize_selector_text();
 
-    print_selected_auton();
+    // print_selected_auton();
   } else {
     hide_background(false);
     hide_motor_boxes(false);
@@ -172,8 +188,7 @@ void GUI::enable() {
   has_initialized = true;
 
   // Give cpu time to update display (this function doesnt work without this)
-  for (int i = 0; i <= 40; i += 10)
-    pros::delay(10);
+  delay();
 }
 
 void GUI::disable() {
@@ -185,6 +200,5 @@ void GUI::disable() {
   gui_enabled = false;
 
   // Give cpu time to update display (this function doesnt work without this)
-  for (int i = 0; i <= 40; i += 10)
-    pros::delay(10);
+  delay();
 }

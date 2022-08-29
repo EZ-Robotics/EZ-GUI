@@ -49,6 +49,6 @@ void autonomous() {
 
 void opcontrol() {
   while (true) {
-    pros::delay(50);
+    pros::delay(10);
   }
 }

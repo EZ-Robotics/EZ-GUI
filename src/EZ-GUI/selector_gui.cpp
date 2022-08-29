@@ -5,6 +5,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
 #include "EZ-GUI/gui.hpp"
+#include "display/lv_core/lv_obj.h"
 
 using namespace ez;
 
@@ -61,6 +62,9 @@ void GUI::initialize_selector_text() {
 void GUI::set_selector_text(std::string text) {
   lv_label_set_text(selector_text, text.c_str());
   lv_obj_align(selector_text, NULL, LV_ALIGN_CENTER, 0, -84);
+
+  // Give cpu time to update display (this function doesnt work without this)
+  delay();
 }
 
 // Update select text with parameter

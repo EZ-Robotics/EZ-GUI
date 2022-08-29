@@ -56,11 +56,13 @@ class GUI {
   lv_style_t box_txt_style;
   lv_style_t slctr_txt_style;
 
-  bool wiggle_text = false;
-
   void call_selected_auton();
 
  private:
+  void set_wiggling_selector_text(std::string text);
+  void set_selector_text(std::string text);
+  bool wiggle_text = false;
+  void delay();
   int amount_of_autos = 0;
   int current_auton_page = 0;
   std::vector<auton_and_name> autons_and_names;
@@ -69,15 +71,14 @@ class GUI {
   void selector_page_up();
   void selector_page_down();
   void print_selected_auton();
+  bool is_auton_enabled = false;
 
   bool gui_enabled = false;
 
-  void set_selector_text(std::string text);
   void initialize_background();
   void initialize_motor_boxes();
   void initialize_selector_buttons();
   void initialize_selector_text();
-  void set_wiggling_selector_text(std::string text);
 
   void initialize_styles();
   void calculate_motor_boxes();
