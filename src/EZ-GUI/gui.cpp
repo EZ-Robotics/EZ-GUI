@@ -13,7 +13,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using namespace ez;
 
-// Constructor for using motors
+// Constructor for using motors without autons
 GUI::GUI(std::vector<gui_motor_name> motor_name, lv_color_t accent_color)
     : screenTask([this] { this->screen_task(); }) {
   // Copy parameters over to globals
@@ -26,7 +26,25 @@ GUI::GUI(std::vector<gui_motor_name> motor_name, lv_color_t accent_color)
   BACKGROUND_COLOR = LV_COLOR_BLACK;
 }
 
-// Constructor for using ints
+// Constructor for using motors with autons
+GUI::GUI(std::vector<gui_motor_name> motor_name, std::vector<auton_and_name> autons, lv_color_t accent_color)
+    : screenTask([this] { this->screen_task(); }) {
+  // Copy parameters over to globals
+  for (int i = 0; i < motor_name.size(); i++) {
+    motors.push_back(motor_name[i].motor);
+    names.push_back(motor_name[i].name);
+    temps.push_back(0);
+  }
+  ACCENT_COLOR = accent_color;
+  BACKGROUND_COLOR = LV_COLOR_BLACK;
+
+  amount_of_autos = autons.size();
+  current_auton_page = 0;
+  autons_and_names = autons;
+  initialize_selector_sd();
+}
+
+// Constructor for using ints without autos
 GUI::GUI(std::vector<gui_int_name> int_name, lv_color_t accent_color)
     : screenTask([this] { this->screen_task(); }) {
   // Copy parameters over to globals
@@ -38,6 +56,25 @@ GUI::GUI(std::vector<gui_int_name> int_name, lv_color_t accent_color)
   }
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
+}
+
+// Constructor for using ints with autos
+GUI::GUI(std::vector<gui_int_name> int_name, std::vector<auton_and_name> autons, lv_color_t accent_color)
+    : screenTask([this] { this->screen_task(); }) {
+  // Copy parameters over to globals
+  for (int i = 0; i < int_name.size(); i++) {
+    pros::Motor temp(i);
+    motors.push_back(temp);
+    names.push_back(int_name[i].name);
+    temps.push_back(0);
+  }
+  ACCENT_COLOR = accent_color;
+  BACKGROUND_COLOR = LV_COLOR_BLACK;
+
+  amount_of_autos = autons.size();
+  current_auton_page = 0;
+  autons_and_names = autons;
+  initialize_selector_sd();
 }
 
 void GUI::initialize_background() {
@@ -91,10 +128,18 @@ void GUI::initialize_styles() {
 }
 
 void GUI::screen_task() {
+  pros::Controller master(pros::E_CONTROLLER_MASTER);
   while (true) {
     while (gui_enabled) {
       // Update motor boxes with motor temperature
       update_motor_boxes();
+
+      if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+        selector_page_down();
+
+      } else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+        selector_page_up();
+      }
     }
 
     pros::delay(50);
@@ -114,6 +159,8 @@ void GUI::enable() {
     initialize_motor_boxes();
     initialize_selector_buttons();
     initialize_selector_text();
+
+    print_selected_auton();
   } else {
     hide_background(false);
     hide_motor_boxes(false);

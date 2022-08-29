@@ -6,6 +6,8 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #pragma once
 
+#include <functional>
+
 #include "api.h"
 #include "pros/misc.h"
 
@@ -14,6 +16,11 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 inline pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 namespace ez {
+
+/**
+ * Is the SD card plugged in?
+ */
+const bool IS_SD_CARD = pros::usd::is_installed();
 
 struct gui_motor_name {
   pros::Motor motor;
@@ -25,10 +32,18 @@ struct gui_int_name {
   std::string name;
 };
 
+struct auton_and_name {
+  std::string name;
+  std::function<void()> auton_call;
+};
+
 class GUI {
  public:
   GUI(std::vector<gui_motor_name> motor_name, lv_color_t accent_color = LV_COLOR_HEX(0xFFC0CB));
+  GUI(std::vector<gui_motor_name> motor_name, std::vector<auton_and_name> autons, lv_color_t accent_color = LV_COLOR_HEX(0xFFC0CB));
+
   GUI(std::vector<gui_int_name> int_name, lv_color_t accent_color = LV_COLOR_HEX(0xFFC0CB));
+  GUI(std::vector<gui_int_name> int_name, std::vector<auton_and_name> autons, lv_color_t accent_color = LV_COLOR_HEX(0xFFC0CB));
 
   void screen_task();
   void disable();
@@ -43,7 +58,18 @@ class GUI {
 
   bool wiggle_text = false;
 
+  void call_selected_auton();
+
  private:
+  int amount_of_autos = 0;
+  int current_auton_page = 0;
+  std::vector<auton_and_name> autons_and_names;
+  void initialize_selector_sd();
+  void selector_update_sd();
+  void selector_page_up();
+  void selector_page_down();
+  void print_selected_auton();
+
   bool gui_enabled = false;
 
   void set_selector_text(std::string text);

@@ -13,7 +13,11 @@ pros::Motor flywheel2(10, false);
 pros::Motor intake(16, false);
 pros::Motor slider_motor(2, false);
 
-ez::GUI motor_display(
+void auton1() {}
+void auton2() {}
+void auton3() {}
+
+ez::GUI display(
     {{l1, "left 1"},
      {l2, "left 2"},
      {r2, "right 2"},
@@ -25,16 +29,23 @@ ez::GUI motor_display(
      {slider_motor, "slider"},
      {intake, "intake"},
      {flywheel, "fly 1"},
-     {flywheel2, "fly 2"}});
+     {flywheel2, "fly 2"}},
+
+    {{"Hello 1", auton1},
+     {"Hello 2", auton2},
+     {"Hello 3", auton3}});
 
 void initialize() {
   pros::delay(300);
 
-  motor_display.enable();
+  display.enable();
 }
 void disabled() {}
 void competition_initialize() {}
-void autonomous() {}
+
+void autonomous() {
+  display.call_selected_auton();
+}
 
 void opcontrol() {
   while (true) {
