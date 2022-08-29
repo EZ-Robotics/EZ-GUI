@@ -13,8 +13,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using namespace ez;
 
-lv_style_t GUI::bckgnd_style = lv_style_plain_color;
-
 // Constructor for using motors
 GUI::GUI(std::vector<gui_motor_name> motor_name, lv_color_t accent_color)
     : screenTask([this] { this->screen_task(); }) {
@@ -62,11 +60,11 @@ void GUI::hide_background(bool hidden) {
   lv_obj_set_hidden(background, hidden);
 }
 
-// Set lgvl styles
+// Set lvgl styles
 void GUI::initialize_styles() {
   // Set background style
   lv_style_copy(&bckgnd_style, &lv_style_plain_color);
-  bckgnd_style.body.main_color = LV_COLOR_RED;
+  bckgnd_style.body.main_color = BACKGROUND_COLOR;
   bckgnd_style.body.grad_color = bckgnd_style.body.main_color;
 
   // Set box style
@@ -97,37 +95,6 @@ void GUI::screen_task() {
     while (gui_enabled) {
       // Update motor boxes with motor temperature
       update_motor_boxes();
-
-      // ez::as::auton_selector.print_selected_auton();
-      // print_to_screen("Page " + std::to_string(current_auton_page + 1) + "\n" + Autons[current_auton_page].Name);
-
-      /*
-      if (!(pros::competition::is_autonomous() && pros::competition::is_disabled())) {
-        if (master.get_digital_new_press(DIGITAL_LEFT))
-          ez::as::page_down();
-        else if (master.get_digital_new_press(DIGITAL_RIGHT))
-          ez::as::page_up();
-      }
-      */
-
-      /*
-      pros::screen_touch_status_s_t hi = pros::c::screen_touch_status();
-      if (status.y < 40) {
-        if (status.x < 50) {
-          // left
-        } else if (status.x > 480 - 50) {
-          // right
-        } else {
-          // somewhere in the middle
-        }
-      }
-      printf("(%i, %i)\n", status.x, status.y);
-      */
-
-      // left
-      // 0,0,50,40
-      // right
-      // 480-50,0,480,40
     }
 
     pros::delay(50);
@@ -145,26 +112,32 @@ void GUI::enable() {
 
     initialize_background();
     initialize_motor_boxes();
-    // initialize_selector_buttons();
-    // initialize_selector_text();
+    initialize_selector_buttons();
+    initialize_selector_text();
   } else {
     hide_background(false);
     hide_motor_boxes(false);
-    // hide_selector_buttons(false);
-    // hide_selector_text(false);
+    hide_selector_buttons(false);
+    hide_selector_text(false);
   }
 
   gui_enabled = true;
   has_initialized = true;
-  printf("Gui enabled!\n");
+
+  // Give cpu time to update display (this function doesnt work without this)
+  for (int i = 0; i <= 40; i += 10)
+    pros::delay(10);
 }
 
 void GUI::disable() {
   hide_background(true);
   hide_motor_boxes(true);
-  // hide_selector_buttons(true);
-  // hide_selector_text(true);
+  hide_selector_buttons(true);
+  hide_selector_text(true);
 
   gui_enabled = false;
-  printf("Gui disabled!\n");
+
+  // Give cpu time to update display (this function doesnt work without this)
+  for (int i = 0; i <= 40; i += 10)
+    pros::delay(10);
 }

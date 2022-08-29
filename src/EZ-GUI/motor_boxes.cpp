@@ -92,7 +92,7 @@ void GUI::calculate_motor_boxes() {
   }
 }
 
-// Initial display + place lgvl objects into vectors for updating later
+// Initial display + place lvgl objects into vectors for updating later
 void GUI::initialize_motor_boxes() {
   if (has_initialized) return;
   is_motor_boxes_hidden = false;
@@ -127,7 +127,7 @@ void GUI::initialize_motor_boxes() {
   }
 }
 
-// Hide motor boxess
+// Hide motor boxes`
 void GUI::hide_motor_boxes(bool hidden) {
   if (!has_initialized) {
     printf("Motor names and boxes are uninitialized!  Cannot modify hide state!\n");

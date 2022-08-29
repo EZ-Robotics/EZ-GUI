@@ -37,7 +37,7 @@ class GUI {
   // static lv_style_t style_txt;
   lv_style_t box_style;
   lv_style_t slctr_bttn_style;
-  static lv_style_t bckgnd_style;
+  lv_style_t bckgnd_style;
   lv_style_t box_txt_style;
   lv_style_t slctr_txt_style;
 

@@ -38,8 +38,8 @@ void GUI::hide_selector_buttons(bool hidden) {
     return;
   }
 
-  lv_obj_set_hidden(selector_left, true);
-  lv_obj_set_hidden(selector_right, true);
+  lv_obj_set_hidden(selector_left, hidden);
+  lv_obj_set_hidden(selector_right, hidden);
 }
 
 // Initialize selector text
