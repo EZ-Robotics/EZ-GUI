@@ -9,6 +9,10 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 using namespace ez;
 
 void GUI::auton_enable() {
+  if (!gui_initialized) {
+    printf("Cannot modify Auton Selector state without being initialized!\n");
+    return;
+  }
   auton_enabled = true;
   selector_text_set("");
 
@@ -17,6 +21,10 @@ void GUI::auton_enable() {
 }
 
 void GUI::auton_disable() {
+  if (!gui_initialized) {
+    printf("Cannot modify Auton Selector state without being initialized!\n");
+    return;
+  }
   auton_enabled = false;
   selector_text_set("");
 }
@@ -44,6 +52,14 @@ void GUI::auton_sd_initialize() {
     auton_page_current = 0;
     auton_sd_update();
   }
+}
+
+int GUI::auton_amount_get() {
+  return amount_of_autos;
+}
+
+int GUI::auton_page_current_get() {
+  return auton_page_current;
 }
 
 // Update the current page on sd card

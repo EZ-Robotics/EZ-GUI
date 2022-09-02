@@ -43,6 +43,7 @@ class GUI {
   void screen_task();
   void disable();
   void enable();
+  bool enabled();
 
   void selector_text_initialize();
   void selector_text_set(std::string text);
@@ -65,7 +66,9 @@ class GUI {
   void auton_page_down();
   void auton_call();
   void auton_button_limitswitch_initialize(pros::ADIDigitalIn* limitswitch_right, pros::ADIDigitalIn* limitswitch_left = nullptr);
-  bool auton_button_limitswitch_using = false;
+  int auton_amount_get();
+  int auton_page_current_get();
+  void auton_print();
 
   void background_hide(bool hidden);
 
@@ -80,9 +83,15 @@ class GUI {
   void pong_loop(std::int32_t ana_stick_L, std::int32_t ana_stick_R);
 
  private:
+  bool gui_enabled = false;
+  bool gui_initialized = false;
+  void styles_initialize();
+  lv_color_t ACCENT_COLOR = LV_COLOR_HEX(0xFFC0CB);
+  lv_color_t BACKGROUND_COLOR = LV_COLOR_BLACK;
+  pros::Task screenTask;
+
   pros::ADIDigitalIn* auton_button_limitswitch_left = nullptr;
   pros::ADIDigitalIn* auton_button_limitswitch_right = nullptr;
-
   void auton_sd_initialize();
   void auton_sd_update();
   bool auton_button_screen_last_right = false;
@@ -92,9 +101,9 @@ class GUI {
   int amount_of_autos = 0;
   int auton_page_current = 0;
   std::vector<auton_and_name> autons_and_names;
-  void auton_print();
   bool auton_enabled = false;
   bool auton_selector_last = false;
+  bool auton_button_limitswitch_using = false;
 
   void selector_text_normal_set(std::string text);
   void selector_text_wiggle_set(std::string text);
@@ -137,13 +146,6 @@ class GUI {
   std::vector<box> motor_box_positions;
   bool motor_boxes_hidden = true;
   bool last_motor_box_hidden = false;
-
-  bool gui_enabled = false;
-  bool gui_initialized = false;
-  void styles_initialize();
-  lv_color_t ACCENT_COLOR = LV_COLOR_HEX(0xFFC0CB);
-  lv_color_t BACKGROUND_COLOR = LV_COLOR_BLACK;
-  pros::Task screenTask;
 
   bool pong_initialized = false;
   bool is_pong_enabled = false;

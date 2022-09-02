@@ -81,6 +81,10 @@ GUI::GUI(std::vector<gui_int_name> int_name, std::vector<auton_and_name> autons,
   auton_sd_initialize();
 }
 
+bool GUI::enabled() {
+  return gui_enabled;
+}
+
 void GUI::background_initialize() {
   if (gui_initialized) return;
 
@@ -138,8 +142,7 @@ void GUI::screen_task() {
       motor_boxes_update();
 
       if (auton_enabled) {
-        // printf("l(%i, %i)   r(%i, %i)\n", auton_button_left(), auton_button_left_new(), auton_button_right(), auton_button_right_new());
-        // Selector with on screen presses
+        // Selector with on screen presses and external presses
         if (auton_button_right_new()) {
           auton_page_up();
         } else if (auton_button_left_new()) {

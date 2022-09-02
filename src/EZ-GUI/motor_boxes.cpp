@@ -157,6 +157,7 @@ void GUI::motor_boxes_update() {
     for (int i = 0; i < motor_temps.size(); i++) {
       motor_temps[i] = 0;
     }
+    last_motor_box_hidden = motor_boxes_hidden;
   }
 
   for (int i = 0; i < motor_box_positions.size(); i++) {

@@ -119,6 +119,10 @@ void GUI::pong_disable() {
   is_pong_enabled = false;
 }
 
+bool GUI::pong_enabled() {
+  return is_pong_enabled;
+}
+
 void GUI::lose_condition() {
   // pros::screen::print(TEXT_MEDIUM_CENTER, 1, "YOU LOST");
   // pros::screen::print(TEXT_MEDIUM_CENTER, 2, "FINAL SCORE: %d", score);

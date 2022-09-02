@@ -1,5 +1,7 @@
 #include "main.h"
 
+#include "pros/misc.hpp"
+
 pros::Motor l1(11, true);
 pros::Motor l2(12, true);
 pros::Motor l3(13, true);
@@ -38,11 +40,49 @@ ez::GUI display(
 pros::ADIDigitalIn increase('F');
 pros::ADIDigitalIn decrease('E');
 
+void pong_screen_task() {
+  bool competition_status = false;
+  while (true) {
+    if (display.enabled()) {
+      if (pros::competition::is_connected() || pros::competition::is_autonomous())
+        competition_status = true;
+      else
+        competition_status = false;
+
+      if (display.auton_button_right_new()) {
+        if (display.auton_page_current_get() == display.auton_amount_get() - 1 && !display.pong_enabled() && !competition_status) {
+          display.pong_enable();
+        } else {
+          display.pong_disable();
+          display.auton_page_up();
+        }
+      } else if (display.auton_button_left_new()) {
+        if (display.auton_page_current_get() == 0 && !display.pong_enabled() && !competition_status) {
+          display.pong_enable();
+        } else {
+          display.pong_disable();
+          display.auton_page_down();
+        }
+      }
+
+      if (competition_status && display.pong_enabled()) {
+        display.pong_disable();
+        display.auton_page_up();
+      }
+    }
+
+    pros::delay(20);
+  }
+}
+pros::Task pongScreenTask(pong_screen_task);
+
 void initialize() {
   pros::delay(300);
 
   display.auton_button_limitswitch_initialize(&increase, &decrease);
   display.enable();
+  display.auton_disable();
+  display.auton_print();
 }
 void disabled() {}
 void competition_initialize() {}
@@ -56,11 +96,6 @@ void opcontrol() {
   while (true) {
     display.pong_loop(master.get_analog(ANALOG_LEFT_Y), master.get_analog(ANALOG_RIGHT_Y));
 
-    if (master.get_digital_new_press(DIGITAL_DOWN)) {
-      display.pong_disable();
-    } else if (master.get_digital_new_press(DIGITAL_UP)) {
-      display.pong_enable();
-    }
     pros::delay(20);
   }
 }
