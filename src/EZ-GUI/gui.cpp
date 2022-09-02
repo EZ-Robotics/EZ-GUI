@@ -19,12 +19,12 @@ GUI::GUI(std::vector<gui_motor_name> motor_name, lv_color_t accent_color)
   // Copy parameters over to globals
   for (int i = 0; i < motor_name.size(); i++) {
     motors.push_back(motor_name[i].motor);
-    names.push_back(motor_name[i].name);
-    temps.push_back(0);
+    motor_names.push_back(motor_name[i].name);
+    motor_temps.push_back(0);
   }
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
-  is_auton_enabled = false;
+  auton_enabled_is = false;
 }
 
 // Constructor for using motors with autons
@@ -33,17 +33,17 @@ GUI::GUI(std::vector<gui_motor_name> motor_name, std::vector<auton_and_name> aut
   // Copy parameters over to globals
   for (int i = 0; i < motor_name.size(); i++) {
     motors.push_back(motor_name[i].motor);
-    names.push_back(motor_name[i].name);
-    temps.push_back(0);
+    motor_names.push_back(motor_name[i].name);
+    motor_temps.push_back(0);
   }
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
 
-  is_auton_enabled = true;
+  auton_enabled_is = true;
   amount_of_autos = autons.size();
-  current_auton_page = 0;
+  auton_page_current = 0;
   autons_and_names = autons;
-  initialize_selector_sd();
+  auton_sd_initialize();
 }
 
 // Constructor for using ints without autos
@@ -53,12 +53,12 @@ GUI::GUI(std::vector<gui_int_name> int_name, lv_color_t accent_color)
   for (int i = 0; i < int_name.size(); i++) {
     pros::Motor temp(i);
     motors.push_back(temp);
-    names.push_back(int_name[i].name);
-    temps.push_back(0);
+    motor_names.push_back(int_name[i].name);
+    motor_temps.push_back(0);
   }
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
-  is_auton_enabled = false;
+  auton_enabled_is = false;
 }
 
 // Constructor for using ints with autos
@@ -68,32 +68,32 @@ GUI::GUI(std::vector<gui_int_name> int_name, std::vector<auton_and_name> autons,
   for (int i = 0; i < int_name.size(); i++) {
     pros::Motor temp(i);
     motors.push_back(temp);
-    names.push_back(int_name[i].name);
-    temps.push_back(0);
+    motor_names.push_back(int_name[i].name);
+    motor_temps.push_back(0);
   }
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
 
-  is_auton_enabled = true;
+  auton_enabled_is = true;
   amount_of_autos = autons.size();
-  current_auton_page = 0;
+  auton_page_current = 0;
   autons_and_names = autons;
-  initialize_selector_sd();
+  auton_sd_initialize();
 }
 
-void GUI::initialize_background() {
-  if (has_initialized) return;
+void GUI::background_initialize() {
+  if (gui_initialized) return;
 
   lv_obj_t* temp_background = lv_obj_create(lv_scr_act(), NULL);
   lv_obj_set_size(temp_background, 480, 240);
-  lv_obj_set_style(temp_background, &bckgnd_style);
+  lv_obj_set_style(temp_background, &background_style);
   lv_obj_align(temp_background, NULL, LV_ALIGN_CENTER, 0, 0);
   background = temp_background;
 }
 
 // Hide background
-void GUI::hide_background(bool hidden) {
-  if (!has_initialized) {
+void GUI::background_hide(bool hidden) {
+  if (!gui_initialized) {
     printf("Background is uninitialized!  Cannot modify hide state!\n");
     return;
   }
@@ -102,11 +102,11 @@ void GUI::hide_background(bool hidden) {
 }
 
 // Set lvgl styles
-void GUI::initialize_styles() {
+void GUI::styles_initialize() {
   // Set background style
-  lv_style_copy(&bckgnd_style, &lv_style_plain_color);
-  bckgnd_style.body.main_color = BACKGROUND_COLOR;
-  bckgnd_style.body.grad_color = bckgnd_style.body.main_color;
+  lv_style_copy(&background_style, &lv_style_plain_color);
+  background_style.body.main_color = BACKGROUND_COLOR;
+  background_style.body.grad_color = background_style.body.main_color;
 
   // Set box style
   lv_style_copy(&box_style, &lv_style_pretty);
@@ -114,10 +114,10 @@ void GUI::initialize_styles() {
   box_style.body.grad_color = box_style.body.main_color;
 
   // Set auto selector button style
-  lv_style_copy(&slctr_bttn_style, &lv_style_pretty);
-  slctr_bttn_style.body.radius = LV_RADIUS_CIRCLE;
-  slctr_bttn_style.body.main_color = ACCENT_COLOR;
-  slctr_bttn_style.body.grad_color = slctr_bttn_style.body.main_color;
+  lv_style_copy(&selector_button_style, &lv_style_pretty);
+  selector_button_style.body.radius = LV_RADIUS_CIRCLE;
+  selector_button_style.body.main_color = ACCENT_COLOR;
+  selector_button_style.body.grad_color = selector_button_style.body.main_color;
 
   // Set box text style
   lv_style_copy(&box_txt_style, &lv_style_plain);
@@ -127,23 +127,23 @@ void GUI::initialize_styles() {
   box_txt_style.text.color = BACKGROUND_COLOR;
 
   // Set auton selector text style
-  lv_style_copy(&slctr_txt_style, &box_txt_style);
-  slctr_txt_style.text.color = ACCENT_COLOR;
+  lv_style_copy(&selector_text_style, &box_txt_style);
+  selector_text_style.text.color = ACCENT_COLOR;
 }
 
 void GUI::screen_task() {
   while (true) {
     if (gui_enabled) {
       // Update motor boxes with motor temperature
-      update_motor_boxes();
+      motor_boxes_update();
 
       // printf("l(%i, %i)   r(%i, %i)\n", get_left_button(), get_new_left_button(), get_right_button(), get_new_right_button());
 
-      if (is_auton_enabled) {
-        if (get_new_left_button()) {
-          selector_page_down();
-        } else if (get_new_right_button()) {
-          selector_page_up();
+      if (auton_enabled_is) {
+        if (auton_button_left_new()) {
+          auton_page_up();
+        } else if (auton_button_right_new()) {
+          auton_page_down();
         }
       }
     }
@@ -153,37 +153,37 @@ void GUI::screen_task() {
 }
 
 void GUI::enable() {
-  for (int i = 0; i < temps.size(); i++) {
-    temps[i] = 0;
+  for (int i = 0; i < motor_temps.size(); i++) {
+    motor_temps[i] = 0;
   }
 
-  if (!has_initialized) {
-    calculate_motor_boxes();  // Figure out motor box x, y
-    initialize_styles();      // Style lvgl styles
+  if (!gui_initialized) {
+    motor_boxes_calculate();  // Figure out motor box x, y
+    styles_initialize();      // Style lvgl styles
 
-    initialize_background();
-    initialize_motor_boxes();
-    initialize_selector_buttons();
-    initialize_selector_text();
+    background_initialize();
+    motor_boxes_initialize();
+    selector_buttons_initialize();
+    selector_text_initialize();
   } else {
-    hide_background(false);
-    hide_motor_boxes(false);
-    hide_selector_buttons(false);
-    hide_selector_text(false);
+    background_hide(false);
+    motor_boxes_hide(false);
+    selector_buttons_hide(false);
+    selector_text_hide(false);
   }
 
-  if (is_auton_enabled)
-    print_selected_auton();
+  if (auton_enabled_is)
+    auton_print();
 
   gui_enabled = true;
-  has_initialized = true;
+  gui_initialized = true;
 }
 
 void GUI::disable() {
   gui_enabled = false;
 
-  hide_background(true);
-  hide_motor_boxes(true);
-  hide_selector_buttons(true);
-  hide_selector_text(true);
+  background_hide(true);
+  motor_boxes_hide(true);
+  selector_buttons_hide(true);
+  selector_text_hide(true);
 }

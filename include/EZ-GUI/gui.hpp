@@ -11,10 +11,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #include "api.h"
 #include "pros/misc.h"
 
-#define fixedCOLOR2G(COLOR) ((COLOR >> 8) & 0xff)
-
-inline pros::Controller master(pros::E_CONTROLLER_MASTER);
-
 namespace ez {
 
 /**
@@ -41,7 +37,6 @@ class GUI {
  public:
   GUI(std::vector<gui_motor_name> motor_name, lv_color_t accent_color = LV_COLOR_HEX(0xFFC0CB));
   GUI(std::vector<gui_motor_name> motor_name, std::vector<auton_and_name> autons, lv_color_t accent_color = LV_COLOR_HEX(0xFFC0CB));
-
   GUI(std::vector<gui_int_name> int_name, lv_color_t accent_color = LV_COLOR_HEX(0xFFC0CB));
   GUI(std::vector<gui_int_name> int_name, std::vector<auton_and_name> autons, lv_color_t accent_color = LV_COLOR_HEX(0xFFC0CB));
 
@@ -49,91 +44,83 @@ class GUI {
   void disable();
   void enable();
 
-  // static lv_style_t style_txt;
-  lv_style_t box_style;
-  lv_style_t slctr_bttn_style;
-  lv_style_t bckgnd_style;
-  lv_style_t box_txt_style;
-  lv_style_t slctr_txt_style;
+  void selector_text_initialize();
+  void selector_text_set(std::string text);
+  void selector_text_wiggle_toggle(bool toggle);
+  void selector_text_hide(bool hidden);
+  void selector_buttons_hide(bool hidden);
+  void selector_buttons_initialize();
 
-  void call_selected_auton();
-  void set_selector_text(std::string text);
-  void set_wiggle(bool toggle);
+  void auton_enable();
+  void auton_disable();
+  bool auton_button_right();
+  bool auton_button_right_new();
+  bool auton_button_left();
+  bool auton_button_left_new();
+  void auton_page_up();
+  void auton_page_down();
+  void auton_call();
 
-  bool get_right_button();
-  bool get_new_right_button();
-  bool get_left_button();
-  bool get_new_left_button();
-
-  void selector_enable();
-  void selector_disable();
-  void selector_wiggle_toggle(bool toggle);
-
-  void selector_page_up();
-  void selector_page_down();
+  void background_hide(bool hidden);
+  void motor_boxes_hide(bool hidden);
+  bool motor_boxes_hidden = true;
 
  private:
- bool wiggle_text = true;
-  bool last_right = false;
-  bool last_left = false;
-  void set_wiggle_selector_text(std::string text);
-  void set_normal_selector_text(std::string text);
+  void auton_sd_initialize();
+  void auton_sd_update();
+  bool auton_button_last_right = false;
+  bool auton_button_last_left = false;
   int amount_of_autos = 0;
-  int current_auton_page = 0;
+  int auton_page_current = 0;
   std::vector<auton_and_name> autons_and_names;
-  void initialize_selector_sd();
-  void selector_update_sd();
+  void auton_print();
+  bool auton_enabled_is = false;
 
-  void print_selected_auton();
-  bool is_auton_enabled = false;
+  void selector_text_normal_set(std::string text);
+  void selector_text_wiggle_set(std::string text);
+  lv_obj_t* selector_text;
+  lv_obj_t* selector_left;
+  lv_obj_t* selector_right;
+  lv_style_t selector_text_style;
+  lv_style_t selector_button_style;
+  bool selector_wiggle_text_enabled = true;
 
-  bool gui_enabled = false;
+  lv_style_t background_style;
+  void background_initialize();
+  lv_obj_t* background;
 
-  void initialize_background();
-  void initialize_motor_boxes();
-  void initialize_selector_buttons();
-  void initialize_selector_text();
-
-  void initialize_styles();
-  void calculate_motor_boxes();
-  lv_color_t ACCENT_COLOR = LV_COLOR_HEX(0xFFC0CB);
-  lv_color_t BACKGROUND_COLOR = LV_COLOR_BLACK;
-  void update_motor_boxes();
-  pros::Task screenTask;
-
-  void hide_motor_boxes(bool hidden);
-  void hide_background(bool hidden);
-  void hide_selector_text(bool hidden);
-  void hide_selector_buttons(bool hidden);
-  bool is_motor_boxes_hidden = true;
-  bool has_initialized = false;
-
+  lv_style_t box_style;
+  lv_style_t box_txt_style;
+  void motor_boxes_initialize();
+  void motor_boxes_calculate();
+  void motor_boxes_update();
   struct box {
     int x1 = 0;
     int x2 = 0;
     int y1 = 0;
     int y2 = 0;
   };
-  struct motor_display_constants {
+  struct motor_display_constants_t {
     int rows = 0;
     int columns = 0;
     int box_width = 0;
     int box_height = 0;
     int boarder = 0;
   };
-  motor_display_constants display;
-  int max_motor_name_length = 0;
-
+  motor_display_constants_t motor_display_constants;
+  int motor_name_length_max = 0;
   std::vector<pros::Motor> motors;
-  std::vector<std::string> names;
-  std::vector<double> temps;
-  std::vector<box> box_pos;
+  std::vector<std::string> motor_names;
+  std::vector<lv_obj_t*> motor_boxes_obj;
+  std::vector<lv_obj_t*> motor_names_obj;
+  std::vector<double> motor_temps;
+  std::vector<box> motor_box_positions;
 
-  std::vector<lv_obj_t*> motor_boxes;
-  std::vector<lv_obj_t*> motor_names;
-  lv_obj_t* selector_text;
-  lv_obj_t* selector_left;
-  lv_obj_t* selector_right;
-  lv_obj_t* background;
+  bool gui_enabled = false;
+  bool gui_initialized = false;
+  void styles_initialize();
+  lv_color_t ACCENT_COLOR = LV_COLOR_HEX(0xFFC0CB);
+  lv_color_t BACKGROUND_COLOR = LV_COLOR_BLACK;
+  pros::Task screenTask;
 };
 }  // namespace ez

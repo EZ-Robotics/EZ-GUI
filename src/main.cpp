@@ -44,7 +44,7 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-  display.call_selected_auton();
+  display.auton_call();
 }
 
 void opcontrol() {
