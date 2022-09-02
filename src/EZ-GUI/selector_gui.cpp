@@ -62,7 +62,7 @@ void GUI::selector_text_initialize() {
 // for public use
 void GUI::selector_text_set(std::string text) {
   if (selector_wiggle_text_enabled)
-    selector_text_normal_set(text);
+    selector_text_wiggle_set(text);
   else
     selector_text_normal_set(text);
 }

@@ -91,8 +91,8 @@ void GUI::auton_call() {
   autons_and_names[auton_page_current].auton_call();
 }
 
-// Get right button
-bool GUI::auton_button_right() {
+// Get right screen button
+bool GUI::auton_button_screen_right() {
   pros::screen_touch_status_s_t status = pros::c::screen_touch_status();
 
   if (status.y < 50 && status.x > 480 - 60 && status.touch_status != 0)
@@ -100,7 +100,69 @@ bool GUI::auton_button_right() {
   return false;
 }
 
-// Get new right button
+// Get left screen button
+bool GUI::auton_button_screen_left() {
+  pros::screen_touch_status_s_t status = pros::c::screen_touch_status();
+
+  if (status.y < 50 && status.x < 60 && status.touch_status != 0)
+    return true;
+  return false;
+}
+
+// Get new left screen button
+bool GUI::auton_button_screen_left_new() {
+  bool cur = auton_button_screen_left();
+  if (cur && !auton_button_screen_last_left) {
+    auton_button_screen_last_left = true;
+    return true;
+  }
+  auton_button_screen_last_left = cur;
+  return false;
+}
+
+// Get new right screen button
+bool GUI::auton_button_screen_right_new() {
+  bool cur = auton_button_screen_right();
+  if (cur && !auton_button_screen_last_right) {
+    auton_button_screen_last_right = true;
+    return true;
+  }
+  auton_button_screen_last_right = cur;
+  return false;
+}
+
+// Using an external button to control the auton selector
+void GUI::auton_button_limitswitch_initialize(pros::ADIDigitalIn* limitswitch_right, pros::ADIDigitalIn* limitswitch_left) {
+  if (!limitswitch_right && !limitswitch_left) {
+    auton_button_limitswitch_using = false;
+    delete auton_button_limitswitch_right;
+    delete auton_button_limitswitch_left;
+    return;
+  }
+  auton_button_limitswitch_using = true;
+  auton_button_limitswitch_right = limitswitch_right;
+  auton_button_limitswitch_left = limitswitch_left;
+}
+
+// Returns screen button OR external button
+bool GUI::auton_button_right() {
+  if (auton_button_screen_right())
+    return true;
+  else if (auton_button_limitswitch_right && auton_button_limitswitch_right->get_value())
+    return true;
+  return false;
+}
+
+// Returns screen button OR external button
+bool GUI::auton_button_left() {
+  if (auton_button_screen_left())
+    return true;
+  else if (auton_button_limitswitch_left && auton_button_limitswitch_left->get_value())
+    return true;
+  return false;
+}
+
+// Get new right screen button
 bool GUI::auton_button_right_new() {
   bool cur = auton_button_right();
   if (cur && !auton_button_last_right) {
@@ -111,16 +173,7 @@ bool GUI::auton_button_right_new() {
   return false;
 }
 
-// Get right button
-bool GUI::auton_button_left() {
-  pros::screen_touch_status_s_t status = pros::c::screen_touch_status();
-
-  if (status.y < 50 && status.x < 60 && status.touch_status != 0)
-    return true;
-  return false;
-}
-
-// Get new left button
+// Get new right screen button
 bool GUI::auton_button_left_new() {
   bool cur = auton_button_left();
   if (cur && !auton_button_last_left) {

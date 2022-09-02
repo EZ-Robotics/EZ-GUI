@@ -53,21 +53,35 @@ class GUI {
 
   void auton_enable();
   void auton_disable();
-  bool auton_button_right();
-  bool auton_button_right_new();
+  bool auton_button_screen_right();
+  bool auton_button_screen_right_new();
+  bool auton_button_screen_left();
+  bool auton_button_screen_left_new();
   bool auton_button_left();
+  bool auton_button_right();
   bool auton_button_left_new();
+  bool auton_button_right_new();
   void auton_page_up();
   void auton_page_down();
   void auton_call();
+  void auton_button_limitswitch_initialize(pros::ADIDigitalIn* limitswitch_right, pros::ADIDigitalIn* limitswitch_left = nullptr);
+  bool auton_button_limitswitch_using = false;
 
   void background_hide(bool hidden);
   void motor_boxes_hide(bool hidden);
   bool motor_boxes_hidden = true;
 
+  bool left();
+  bool right();
+
  private:
+  pros::ADIDigitalIn* auton_button_limitswitch_left = nullptr;
+  pros::ADIDigitalIn* auton_button_limitswitch_right = nullptr;
+
   void auton_sd_initialize();
   void auton_sd_update();
+  bool auton_button_screen_last_right = false;
+  bool auton_button_screen_last_left = false;
   bool auton_button_last_right = false;
   bool auton_button_last_left = false;
   int amount_of_autos = 0;

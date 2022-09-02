@@ -35,9 +35,13 @@ ez::GUI display(
      {"Auto 2", auton2},
      {"Auto 3", auton3}});
 
+pros::ADIDigitalIn increase('F');
+pros::ADIDigitalIn decrease('E');
+
 void initialize() {
   pros::delay(300);
 
+  display.auton_button_limitswitch_initialize(&increase, &decrease);
   display.enable();
 }
 void disabled() {}

@@ -137,14 +137,33 @@ void GUI::screen_task() {
       // Update motor boxes with motor temperature
       motor_boxes_update();
 
-      // printf("l(%i, %i)   r(%i, %i)\n", get_left_button(), get_new_left_button(), get_right_button(), get_new_right_button());
-
       if (auton_enabled_is) {
-        if (auton_button_left_new()) {
+        // printf("l(%i, %i)   r(%i, %i)\n", auton_button_left(), auton_button_left_new(), auton_button_right(), auton_button_right_new());
+        // Selector with on screen presses
+        if (auton_button_right_new()) {
           auton_page_up();
-        } else if (auton_button_right_new()) {
+        } else if (auton_button_left_new()) {
           auton_page_down();
         }
+
+        /*
+
+        // Selector with on screen presses
+        if (auton_button_screen_right_new()) {
+          auton_page_up();
+        } else if (auton_button_screen_left_new()) {
+          auton_page_down();
+        }
+
+        // Selector with external buttons
+        if (auton_button_limitswitch_using) {
+          if (auton_button_limitswitch_right && auton_button_limitswitch_right->get_new_press()) {
+            auton_page_up();
+          } else if (auton_button_limitswitch_left && auton_button_limitswitch_left->get_new_press()) {
+            auton_page_down();
+          }
+        }
+        */
       }
     }
 
