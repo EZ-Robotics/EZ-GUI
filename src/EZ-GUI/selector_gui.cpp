@@ -79,7 +79,7 @@ void GUI::selector_text_normal_set(std::string text) {
 // for private use
 void GUI::selector_text_wiggle_set(std::string text) {
   int spaces_to_add = 28 - text.length();
-  if (spaces_to_add <= 2) {
+  if (spaces_to_add < 2) {
     selector_text_normal_set(text);
     return;
   }

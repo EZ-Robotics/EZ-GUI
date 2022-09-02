@@ -22,12 +22,6 @@ const std::int16_t
     ana_stick_sens = 20;
 ;
 
-const std::uint32_t
-    lPaddleColor = 0xFFFFFFFF,
-    rPaddleColor = 0xFFFFFFFF,
-    ballColor = 0xFFFFFFFF,
-    backgroundColor = 0x00000000;
-
 std::uint8_t globalTimer;
 
 std::int16_t
@@ -163,7 +157,7 @@ void GUI::stickMovement(std::int32_t ana_stick_L, std::int32_t ana_stick_R) {
 
 void GUI::ballMovement() {
   // collision with paddles
-  if (checkCollision(lPaddleX + (paddleWidth / 2), lPaddleY, paddleWidth, paddleHeight, ballx, bally)) {
+  if (checkCollision(lPaddleX + (paddleWidth / 2), lPaddleY, paddleWidth, paddleHeight + (ballRadius * 2), ballx, bally)) {
     // collision with left paddle
     if (ballVelX < 0) {
       ballVelX *= -1;
@@ -174,7 +168,7 @@ void GUI::ballMovement() {
     }
   }
 
-  if (checkCollision(rPaddleX - paddleWidth, rPaddleY, paddleWidth, paddleHeight, ballx, bally)) {
+  if (checkCollision(rPaddleX - paddleWidth, rPaddleY, paddleWidth, paddleHeight + (ballRadius * 2), ballx, bally)) {
     // collision with right paddle
     if (ballVelX > 0) {
       ballVelX *= -1;
