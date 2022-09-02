@@ -31,9 +31,9 @@ ez::GUI display(
      {flywheel, "fly 1"},
      {flywheel2, "fly 2"}},
 
-    {{"Hello 1", auton1},
-     {"Hello 2", auton2},
-     {"Hello 3", auton3}});
+    {{"Auto 1", auton1},
+     {"Auto 2", auton2},
+     {"Auto 3", auton3}});
 
 void initialize() {
   pros::delay(300);

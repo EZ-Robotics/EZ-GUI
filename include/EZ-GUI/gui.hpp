@@ -57,19 +57,33 @@ class GUI {
   lv_style_t slctr_txt_style;
 
   void call_selected_auton();
+  void set_selector_text(std::string text);
+  void set_wiggle(bool toggle);
+
+  bool get_right_button();
+  bool get_new_right_button();
+  bool get_left_button();
+  bool get_new_left_button();
+
+  void selector_enable();
+  void selector_disable();
+  void selector_wiggle_toggle(bool toggle);
+
+  void selector_page_up();
+  void selector_page_down();
 
  private:
-  void set_wiggling_selector_text(std::string text);
-  void set_selector_text(std::string text);
-  bool wiggle_text = false;
-  void delay();
+ bool wiggle_text = true;
+  bool last_right = false;
+  bool last_left = false;
+  void set_wiggle_selector_text(std::string text);
+  void set_normal_selector_text(std::string text);
   int amount_of_autos = 0;
   int current_auton_page = 0;
   std::vector<auton_and_name> autons_and_names;
   void initialize_selector_sd();
   void selector_update_sd();
-  void selector_page_up();
-  void selector_page_down();
+
   void print_selected_auton();
   bool is_auton_enabled = false;
 

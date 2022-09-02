@@ -9,6 +9,19 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using namespace ez;
 
+void GUI::selector_enable() {
+  is_auton_enabled = true;
+  set_selector_text("");
+
+  if (is_auton_enabled)
+    print_selected_auton();
+}
+
+void GUI::selector_disable() {
+  is_auton_enabled = false;
+  set_selector_text("");
+}
+
 // Initialize selector buttons
 void GUI::initialize_selector_buttons() {
   if (has_initialized) return;
@@ -54,25 +67,33 @@ void GUI::initialize_selector_text() {
   lv_obj_set_width(temp_selector, 350);
   lv_label_set_anim_speed(temp_selector, 125);
   lv_label_set_text(temp_selector, "");
-  lv_obj_align(temp_selector, NULL, LV_ALIGN_CENTER, 0, -85);
+  lv_obj_align(temp_selector, NULL, LV_ALIGN_CENTER, 0, -84);
   selector_text = temp_selector;
 }
 
 // Update selector text with parameter
+// for public use
 void GUI::set_selector_text(std::string text) {
+  if (wiggle_text)
+    set_wiggle_selector_text(text);
+  else
+    set_normal_selector_text(text);
+}
+
+// Update without wiggling selector text with parameter
+// for private use
+void GUI::set_normal_selector_text(std::string text) {
   lv_label_set_text(selector_text, text.c_str());
   lv_obj_align(selector_text, NULL, LV_ALIGN_CENTER, 0, -84);
-
-  // Give cpu time to update display (this function doesnt work without this)
-  delay();
 }
 
 // Update select text with parameter
 // ...but it wiggles
-void GUI::set_wiggling_selector_text(std::string text) {
+// for private use
+void GUI::set_wiggle_selector_text(std::string text) {
   int spaces_to_add = 28 - text.length();
   if (spaces_to_add <= 2) {
-    set_selector_text(text);
+    set_normal_selector_text(text);
     return;
   }
 
@@ -80,9 +101,14 @@ void GUI::set_wiggling_selector_text(std::string text) {
   for (int i = 0; i < spaces_to_add / 2.0; i++) {
     spaces += " ";
   }
-  set_selector_text(spaces + text + spaces);
+  set_normal_selector_text(spaces + text + spaces);
 }
 
+void GUI::selector_wiggle_toggle(bool toggle) {
+  wiggle_text = toggle;
+}
+
+// Hide selector text
 void GUI::hide_selector_text(bool hidden) {
   if (!has_initialized) {
     printf("Selector text is uninitialized!  Cannot modify hide state!\n");

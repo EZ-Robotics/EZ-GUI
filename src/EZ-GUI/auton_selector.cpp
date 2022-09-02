@@ -11,7 +11,7 @@ using namespace ez;
 // Initialize sd card for auto selector
 void GUI::initialize_selector_sd() {
   // If no SD card, return
-  if (!IS_SD_CARD || !is_auton_enabled) return;
+  if (!IS_SD_CARD) return;
 
   FILE* as_usd_file_read;
   // If file exists...
@@ -36,7 +36,7 @@ void GUI::initialize_selector_sd() {
 // Update the current page on sd card
 void GUI::selector_update_sd() {
   // If no SD card, return
-  if (!IS_SD_CARD || !is_auton_enabled) return;
+  if (!IS_SD_CARD) return;
 
   FILE* usd_file_write = fopen("/usd/auto.txt", "w");
   std::string cp_str = std::to_string(current_auton_page);
@@ -47,8 +47,6 @@ void GUI::selector_update_sd() {
 
 // Increase page on auto selector
 void GUI::selector_page_up() {
-  if (!is_auton_enabled) return;
-
   if (current_auton_page == amount_of_autos - 1)
     current_auton_page = 0;
   else
@@ -59,8 +57,6 @@ void GUI::selector_page_up() {
 
 // Decrease page on auto selector
 void GUI::selector_page_down() {
-  if (!is_auton_enabled) return;
-
   if (current_auton_page == 0)
     current_auton_page = amount_of_autos - 1;
   else
@@ -71,16 +67,53 @@ void GUI::selector_page_down() {
 
 // Print selected auton
 void GUI::print_selected_auton() {
-  if (amount_of_autos == 0 || !is_auton_enabled) return;
+  if (amount_of_autos == 0) return;
 
-  if (wiggle_text)
-    set_wiggling_selector_text(autons_and_names[current_auton_page].name);
-  else
-    set_selector_text(autons_and_names[current_auton_page].name);
+  set_selector_text(autons_and_names[current_auton_page].name);
 }
 
 // Call selected auton
 void GUI::call_selected_auton() {
-  if (amount_of_autos == 0 || !is_auton_enabled) return;
+  if (amount_of_autos == 0) return;
   autons_and_names[current_auton_page].auton_call();
+}
+
+// Get right button
+bool GUI::get_right_button() {
+  pros::screen_touch_status_s_t status = pros::c::screen_touch_status();
+
+  if (status.y < 50 && status.x > 480 - 60 && status.touch_status != 0)
+    return true;
+  return false;
+}
+
+// Get new right button
+bool GUI::get_new_right_button() {
+  bool cur = get_right_button();
+  if (cur && !last_right) {
+    last_right = true;
+    return true;
+  }
+  last_right = cur;
+  return false;
+}
+
+// Get right button
+bool GUI::get_left_button() {
+  pros::screen_touch_status_s_t status = pros::c::screen_touch_status();
+
+  if (status.y < 50 && status.x < 60 && status.touch_status != 0)
+    return true;
+  return false;
+}
+
+// Get new left button
+bool GUI::get_new_left_button() {
+  bool cur = get_left_button();
+  if (cur && !last_left) {
+    last_left = true;
+    return true;
+  }
+  last_left = cur;
+  return false;
 }

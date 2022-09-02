@@ -81,11 +81,6 @@ GUI::GUI(std::vector<gui_int_name> int_name, std::vector<auton_and_name> autons,
   initialize_selector_sd();
 }
 
-void GUI::delay() {
-  for (int i = 0; i <= 40; i += 10)
-    pros::delay(10);
-}
-
 void GUI::initialize_background() {
   if (has_initialized) return;
 
@@ -137,28 +132,23 @@ void GUI::initialize_styles() {
 }
 
 void GUI::screen_task() {
-  bool initial_update_screen = false;
-  pros::Controller master(pros::E_CONTROLLER_MASTER);
   while (true) {
-    while (gui_enabled) {
+    if (gui_enabled) {
       // Update motor boxes with motor temperature
       update_motor_boxes();
 
-      if (is_auton_enabled) {
-        if (!initial_update_screen) {
-          print_selected_auton();
-          initial_update_screen = !initial_update_screen;
-        }
-      }
+      // printf("l(%i, %i)   r(%i, %i)\n", get_left_button(), get_new_left_button(), get_right_button(), get_new_right_button());
 
-      if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-        selector_page_down();
-      } else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-        selector_page_up();
+      if (is_auton_enabled) {
+        if (get_new_left_button()) {
+          selector_page_down();
+        } else if (get_new_right_button()) {
+          selector_page_up();
+        }
       }
     }
 
-    pros::delay(50);
+    pros::delay(20);
   }
 }
 
@@ -175,8 +165,6 @@ void GUI::enable() {
     initialize_motor_boxes();
     initialize_selector_buttons();
     initialize_selector_text();
-
-    // print_selected_auton();
   } else {
     hide_background(false);
     hide_motor_boxes(false);
@@ -184,21 +172,18 @@ void GUI::enable() {
     hide_selector_text(false);
   }
 
+  if (is_auton_enabled)
+    print_selected_auton();
+
   gui_enabled = true;
   has_initialized = true;
-
-  // Give cpu time to update display (this function doesnt work without this)
-  delay();
 }
 
 void GUI::disable() {
+  gui_enabled = false;
+
   hide_background(true);
   hide_motor_boxes(true);
   hide_selector_buttons(true);
   hide_selector_text(true);
-
-  gui_enabled = false;
-
-  // Give cpu time to update display (this function doesnt work without this)
-  delay();
 }
