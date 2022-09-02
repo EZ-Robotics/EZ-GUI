@@ -24,7 +24,7 @@ GUI::GUI(std::vector<gui_motor_name> motor_name, lv_color_t accent_color)
   }
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
-  auton_enabled_is = false;
+  auton_enabled = false;
 }
 
 // Constructor for using motors with autons
@@ -39,7 +39,7 @@ GUI::GUI(std::vector<gui_motor_name> motor_name, std::vector<auton_and_name> aut
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
 
-  auton_enabled_is = true;
+  auton_enabled = true;
   amount_of_autos = autons.size();
   auton_page_current = 0;
   autons_and_names = autons;
@@ -58,7 +58,7 @@ GUI::GUI(std::vector<gui_int_name> int_name, lv_color_t accent_color)
   }
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
-  auton_enabled_is = false;
+  auton_enabled = false;
 }
 
 // Constructor for using ints with autos
@@ -74,7 +74,7 @@ GUI::GUI(std::vector<gui_int_name> int_name, std::vector<auton_and_name> autons,
   ACCENT_COLOR = accent_color;
   BACKGROUND_COLOR = LV_COLOR_BLACK;
 
-  auton_enabled_is = true;
+  auton_enabled = true;
   amount_of_autos = autons.size();
   auton_page_current = 0;
   autons_and_names = autons;
@@ -137,7 +137,7 @@ void GUI::screen_task() {
       // Update motor boxes with motor temperature
       motor_boxes_update();
 
-      if (auton_enabled_is) {
+      if (auton_enabled) {
         // printf("l(%i, %i)   r(%i, %i)\n", auton_button_left(), auton_button_left_new(), auton_button_right(), auton_button_right_new());
         // Selector with on screen presses
         if (auton_button_right_new()) {
@@ -145,25 +145,6 @@ void GUI::screen_task() {
         } else if (auton_button_left_new()) {
           auton_page_down();
         }
-
-        /*
-
-        // Selector with on screen presses
-        if (auton_button_screen_right_new()) {
-          auton_page_up();
-        } else if (auton_button_screen_left_new()) {
-          auton_page_down();
-        }
-
-        // Selector with external buttons
-        if (auton_button_limitswitch_using) {
-          if (auton_button_limitswitch_right && auton_button_limitswitch_right->get_new_press()) {
-            auton_page_up();
-          } else if (auton_button_limitswitch_left && auton_button_limitswitch_left->get_new_press()) {
-            auton_page_down();
-          }
-        }
-        */
       }
     }
 
@@ -184,6 +165,7 @@ void GUI::enable() {
     motor_boxes_initialize();
     selector_buttons_initialize();
     selector_text_initialize();
+    pong_initialize();
   } else {
     background_hide(false);
     motor_boxes_hide(false);
@@ -191,7 +173,7 @@ void GUI::enable() {
     selector_text_hide(false);
   }
 
-  if (auton_enabled_is)
+  if (auton_enabled)
     auton_print();
 
   gui_enabled = true;

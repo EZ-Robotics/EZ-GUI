@@ -68,11 +68,16 @@ class GUI {
   bool auton_button_limitswitch_using = false;
 
   void background_hide(bool hidden);
+
   void motor_boxes_hide(bool hidden);
-  bool motor_boxes_hidden = true;
 
   bool left();
   bool right();
+
+  void pong_enable();
+  void pong_disable();
+  bool pong_enabled();
+  void pong_loop(std::int32_t ana_stick_L, std::int32_t ana_stick_R);
 
  private:
   pros::ADIDigitalIn* auton_button_limitswitch_left = nullptr;
@@ -88,7 +93,8 @@ class GUI {
   int auton_page_current = 0;
   std::vector<auton_and_name> autons_and_names;
   void auton_print();
-  bool auton_enabled_is = false;
+  bool auton_enabled = false;
+  bool auton_selector_last = false;
 
   void selector_text_normal_set(std::string text);
   void selector_text_wiggle_set(std::string text);
@@ -129,6 +135,8 @@ class GUI {
   std::vector<lv_obj_t*> motor_names_obj;
   std::vector<double> motor_temps;
   std::vector<box> motor_box_positions;
+  bool motor_boxes_hidden = true;
+  bool last_motor_box_hidden = false;
 
   bool gui_enabled = false;
   bool gui_initialized = false;
@@ -136,5 +144,24 @@ class GUI {
   lv_color_t ACCENT_COLOR = LV_COLOR_HEX(0xFFC0CB);
   lv_color_t BACKGROUND_COLOR = LV_COLOR_BLACK;
   pros::Task screenTask;
+
+  bool pong_initialized = false;
+  bool is_pong_enabled = false;
+  lv_obj_t* pong_paddle_left;
+  lv_obj_t* pong_paddle_right;
+  lv_obj_t* pong_ball;
+  void lose_condition();
+  bool checkCollision(std::int16_t padX,
+                      std::int16_t padY,
+                      std::int16_t padWidth,
+                      std::int16_t padHeight,
+                      std::int16_t bX,
+                      std::int16_t bY);
+  void stickMovement(std::int32_t ana_stick_L, std::int32_t ana_stick_R);
+  void ballMovement();
+  void pong_update(std::int32_t ana_stick_L, std::int32_t ana_stick_R);
+  void pong_draw();
+  void pong_initialize();
+  int pong_score_last = -1;
 };
 }  // namespace ez

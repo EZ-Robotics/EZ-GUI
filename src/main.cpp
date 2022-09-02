@@ -52,7 +52,15 @@ void autonomous() {
 }
 
 void opcontrol() {
+  pros::Controller master(CONTROLLER_MASTER);
   while (true) {
-    pros::delay(10);
+    display.pong_loop(master.get_analog(ANALOG_LEFT_Y), master.get_analog(ANALOG_RIGHT_Y));
+
+    if (master.get_digital_new_press(DIGITAL_DOWN)) {
+      display.pong_disable();
+    } else if (master.get_digital_new_press(DIGITAL_UP)) {
+      display.pong_enable();
+    }
+    pros::delay(20);
   }
 }

@@ -134,16 +134,30 @@ void GUI::motor_boxes_hide(bool hidden) {
     return;
   }
 
-  motor_boxes_hidden = hidden;
   for (int i = 0; i < motor_box_positions.size(); i++) {
     lv_obj_set_hidden(motor_boxes_obj[i], hidden);
     lv_obj_set_hidden(motor_names_obj[i], hidden);
   }
+
+  for (int i = 0; i < motor_temps.size(); i++) {
+    motor_temps[i] = 0;
+  }
+
+  motor_boxes_hidden = hidden;
 }
 
 // This is constantly run to update the colors of the boxes as motors heat up
 void GUI::motor_boxes_update() {
-  if (motor_boxes_hidden) return;
+  if (motor_boxes_hidden) {
+    last_motor_box_hidden = motor_boxes_hidden;
+    return;
+  }
+
+  if (motor_boxes_hidden != last_motor_box_hidden) {
+    for (int i = 0; i < motor_temps.size(); i++) {
+      motor_temps[i] = 0;
+    }
+  }
 
   for (int i = 0; i < motor_box_positions.size(); i++) {
     // Check if the temperature has updated
@@ -159,7 +173,7 @@ void GUI::motor_boxes_update() {
       }
       opposite_percent = 1 - percent;
 
-      // printf("Motor %s is at %.2fc!\n", names[i].c_str(), temp);
+      printf("Motor %s is at %.2fc!\n", motor_names[i].c_str(), temp);
 
       // Create new color in-between background_color and accent_color
       static lv_color_t new_color;

@@ -9,15 +9,15 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 using namespace ez;
 
 void GUI::auton_enable() {
-  auton_enabled_is = true;
+  auton_enabled = true;
   selector_text_set("");
 
-  if (auton_enabled_is)
+  if (auton_enabled)
     auton_print();
 }
 
 void GUI::auton_disable() {
-  auton_enabled_is = false;
+  auton_enabled = false;
   selector_text_set("");
 }
 
