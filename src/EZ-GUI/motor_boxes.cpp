@@ -174,7 +174,7 @@ void GUI::motor_boxes_update() {
       }
       opposite_percent = 1 - percent;
 
-      printf("Motor %s is at %.2fc!\n", motor_names[i].c_str(), temp);
+      // printf("Motor %s is at %.2fc!\n", motor_names[i].c_str(), temp);
 
       // Create new color in-between background_color and accent_color
       static lv_color_t new_color;
